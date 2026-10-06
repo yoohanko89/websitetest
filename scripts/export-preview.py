@@ -41,7 +41,7 @@ class OfflineResources(HTMLParser):
         candidates = []
         if tag in {"img", "source", "script"} and attrs.get("src"):
             candidates.append(attrs["src"])
-        if tag == "link" and attrs.get("href"):
+        if tag == "link" and attrs.get("href") and "canonical" not in attrs.get("rel", "").lower().split():
             candidates.append(attrs["href"])
         for value in candidates:
             if not value.startswith("data:"):
@@ -95,6 +95,10 @@ def main():
 
     def rewrite_tag(match):
         tag = match.group()
+        # A canonical URL is metadata, not a resource fetched by the browser.
+        # Keep the public page identity while embedding runtime dependencies.
+        if re.search(r"^<link\b", tag, re.IGNORECASE) and re.search(r"\brel\s*=\s*([\"'])canonical\1", tag, re.IGNORECASE):
+            return tag
         if re.search(r"\brel\s*=\s*([\"'])stylesheet\1", tag, re.IGNORECASE):
             href = ATTRIBUTE.search(tag)
             if not href or href.group(3) != "styles.css":
@@ -154,7 +158,7 @@ def main():
 
     # Runtime JS closure comes from esbuild; include only live assets and useful
     # deployment/editorial instructions, never Git metadata or build dependencies.
-    for name in ["README.md", "robots.txt", "sitemap.xml", "scripts/configure-site.py", "scripts/export-preview.py", "assets/buyer-content.json", "assets/vendor/README.md"]:
+    for name in ["README.md", ".nojekyll", "robots.txt", "sitemap.xml", "scripts/configure-site.py", "scripts/export-preview.py", "assets/buyer-content.json", "assets/vendor/README.md"]:
         if (root / name).is_file():
             local_file(name)
     digests = {name: hashlib.sha256((root / name).read_bytes()).digest() for name in resources}
