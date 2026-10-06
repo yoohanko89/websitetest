@@ -1,0 +1,191 @@
+{
+  "metadata": {
+    "title": "KO'S | Korean Tea, Matcha, Yuzu & Ginseng Ingredients",
+    "description": "Explore Korean green tea, matcha, yuzu and ginseng with KO'S. A guide to ingredient origins, processing and the specifications international buyers should verify."
+  },
+  "hero": {
+    "eyebrow": "KO'S · Korean Original Soul",
+    "title": "A universe of life. An origin worth knowing.",
+    "description": "From a distant galaxy to the soil beneath our feet. Discover the leaves, fruit and roots at the heart of Korean ingredients.",
+    "primaryCta": "Explore the ingredients",
+    "secondaryCta": "Plan a sourcing inquiry",
+    "scrollLabel": "Scroll to trace the origin"
+  },
+  "journey": [
+    {
+      "id": "galaxy",
+      "title": "Everything begins with a connection.",
+      "description": "Light, water, earth and time. The story of an ingredient begins long before the harvest."
+    },
+    {
+      "id": "earth",
+      "title": "One living planet.",
+      "description": "Come closer to the land that gives each leaf, fruit and root its character."
+    },
+    {
+      "id": "korea",
+      "title": "A closer look at Korea.",
+      "description": "From southern islands and coastal orchards to inland growing landscapes, an invitation to understand origin."
+    },
+    {
+      "id": "farm",
+      "title": "Back to the source.",
+      "description": "A citrus skin catching the light. A new tea leaf. A root lifted from the soil. This is where our ingredient philosophy begins."
+    }
+  ],
+  "origins": {
+    "eyebrow": "The Korean growing landscape",
+    "title": "Origin is more than a place on a map.",
+    "paragraphs": [
+      "Our journey draws inspiration from Jeju, Korea's southern coast, Jeolla, Gyeongsang and Chungcheong. These landscapes introduce how climate, cultivation and harvest shape ingredients. They are a visual introduction to Korea, rather than a map of confirmed KO'S suppliers.",
+      "For a sourcing decision, the useful story is specific: the named farm or processor, country and region of origin, harvest date and the records attached to the actual lot. A regional reputation is a starting point for questions, not a substitute for traceability."
+    ],
+    "regions": [
+      "Jeju",
+      "South coast",
+      "Jeolla",
+      "Gyeongsang",
+      "Chungcheong"
+    ],
+    "caption": "An illustrated journey through Korean growing landscapes. Confirm the origin of each proposed lot during sourcing."
+  },
+  "ingredients": [
+    {
+      "id": "tea",
+      "name": "Green tea & matcha",
+      "eyebrow": "Olive green · The leaf",
+      "title": "A fresh leaf. Two distinct expressions.",
+      "paragraphs": [
+        "Green tea and matcha begin with the tea plant, Camellia sinensis. For green tea, heat after picking limits oxidation; leaves are then shaped and dried. The result depends on cultivar, picking season and processing. A vivid leaf in the field does not tell the whole story of the finished tea.",
+        "Matcha is finely milled tea made from leaves grown with a shading stage and processed for grinding. Conventional matcha production uses tencha: steamed, dried leaves prepared without the rolling used for many other green teas, with stems and veins removed before milling. Not every green tea powder is matcha. Buyers should ask about shading, leaf preparation, milling and storage, then evaluate a sample in the intended drink or recipe."
+      ],
+      "specificationPrompt": "Ask about cultivar, harvest, processing, particle size, sensory profile and light-resistant packaging.",
+      "caption": "Illustrated tea landscape, inspired by the freshness of newly growing leaves."
+    },
+    {
+      "id": "yuzu",
+      "name": "Yuzu / Yuja",
+      "eyebrow": "Gold yellow · The fruit",
+      "title": "Sunlight held in a fragrant peel.",
+      "paragraphs": [
+        "Yuja is the Korean name for yuzu, Citrus junos. Its aromatic peel and tart juice bring different qualities to beverages, sauces and confectionery. Picture fruit on the branch: textured skin, green leaves and the moment before picking. Preserving that character depends on the handling after harvest.",
+        "Fresh fruit, juice, peel, puree and sweetened preparations are different buying specifications. Clarify whether a proposed ingredient includes sugar, seeds, peel or other additions. Compare acidity, soluble solids, processing method and storage conditions. For a formulated product, taste the sample at the actual usage level so that aroma, sweetness and bitterness can be judged together."
+      ],
+      "specificationPrompt": "Define the format, ingredient composition, acidity, soluble solids and intended application.",
+      "caption": "Illustrated yuzu orchard, celebrating fruit on the branch before harvest."
+    },
+    {
+      "id": "ginseng",
+      "name": "Ginseng & red ginseng",
+      "eyebrow": "Burgundy · The root",
+      "title": "From living soil to a considered process.",
+      "paragraphs": [
+        "The lifted root is our image of beginnings: earth still clinging to its surface, fine roots intact. Korean ginseng refers to Panax ginseng. Fresh ginseng is the harvested root; red ginseng is produced by steaming and drying it. Red ginseng's darker appearance and distinctive flavor come from processing, rather than from a separate red-rooted plant.",
+        "Whole roots, slices, powders and extracts require different specifications. Ask for botanical identity, root age where documented, processing details and composition. For extracts, clarify the extraction method, concentration, carriers and any agreed analytical markers. Choose the form through application trials and documented requirements, rather than assuming that color or a photograph establishes quality."
+      ],
+      "specificationPrompt": "Confirm species, form, processing, composition and the documentation required for your market.",
+      "caption": "Illustrated ginseng harvest, expressing the root's connection to the soil."
+    }
+  ],
+  "sourcing": {
+    "eyebrow": "Our ingredient philosophy",
+    "title": "Begin with the essential. Make the details clear.",
+    "paragraphs": [
+      "KO'S places the ingredient before the finished product: where it comes from, how it is grown, what happens at harvest and how it reaches the next maker. Freshness is a practical question about elapsed time, processing, packaging and storage. For a dried leaf or steamed root, careful preservation may matter more than a claim of being freshly picked.",
+      "Organic cultivation is an aspiration that must be supported by evidence when a product is sold as organic. Buyers should verify a current certificate, its product scope, the certified operator and acceptance in the destination market. The landscape imagery on this page does not establish certified-organic status. Product claims belong with the relevant documents for the proposed supply."
+    ]
+  },
+  "buyerGuide": {
+    "eyebrow": "For international buyers",
+    "title": "Start with a specification, then a sample.",
+    "introduction": "A clear brief helps turn an ingredient idea into a useful sourcing conversation. Agree on these details before comparing offers.",
+    "checks": [
+      {
+        "title": "Identity & origin",
+        "description": "State the ingredient, botanical species where relevant, required form and destination. Request lot origin and traceability records."
+      },
+      {
+        "title": "Composition & performance",
+        "description": "Specify additions, processing, sensory targets and how the ingredient will be used. Evaluate samples in your own application."
+      },
+      {
+        "title": "Quality documentation",
+        "description": "Agree on relevant safety limits and test evidence, allergens, storage and shelf life. Confirm any certification needed for your market."
+      },
+      {
+        "title": "Commercial & logistics details",
+        "description": "Request current availability, sample arrangements, order quantities, lead time, packaging and shipment terms. Confirm import requirements before ordering."
+      }
+    ]
+  },
+  "faq": [
+    {
+      "question": "Is every green tea powder matcha?",
+      "answer": "No. Matcha involves specific cultivation and leaf preparation as well as milling. Ask how the leaves were shaded and processed, and evaluate the powder against your application requirements."
+    },
+    {
+      "question": "Are yuzu and yuja the same ingredient?",
+      "answer": "Yuja is the Korean name for yuzu. A fresh fruit and a sweetened yuja preparation have different compositions, so always check the format and full ingredient list."
+    },
+    {
+      "question": "What is the difference between ginseng and red ginseng?",
+      "answer": "Fresh ginseng is the harvested root. Red ginseng is ginseng that has been steamed and dried. Processing, format and composition should be specified separately when buying."
+    },
+    {
+      "question": "Are the ingredients shown certified organic?",
+      "answer": "This page describes an ingredient philosophy and growing landscapes. It does not certify a product. Confirm current organic documentation and its applicability to the exact product and destination market."
+    },
+    {
+      "question": "What should I include in a sourcing inquiry?",
+      "answer": "Share your target ingredient and format, intended application, destination country, estimated quantity and required documents. Availability, origin, pricing and delivery terms require a separate confirmed offer."
+    }
+  ],
+  "inquiry": {
+    "eyebrow": "Begin a conversation",
+    "title": "What would you like to create?",
+    "description": "Prepare a sourcing brief with the details below. A precise application and destination help define the questions that matter.",
+    "fields": [
+      {
+        "name": "name",
+        "label": "Your name",
+        "placeholder": "Full name"
+      },
+      {
+        "name": "company",
+        "label": "Company",
+        "placeholder": "Company or organization"
+      },
+      {
+        "name": "email",
+        "label": "Business email",
+        "placeholder": "name@company.com"
+      },
+      {
+        "name": "destination",
+        "label": "Destination country",
+        "placeholder": "Intended import market"
+      },
+      {
+        "name": "ingredient",
+        "label": "Ingredient & format",
+        "placeholder": "For example, matcha powder or unsweetened yuzu juice"
+      },
+      {
+        "name": "quantity",
+        "label": "Estimated quantity",
+        "placeholder": "Volume and planned purchasing frequency"
+      },
+      {
+        "name": "application",
+        "label": "Application & requirements",
+        "placeholder": "Product use, target specifications, required documents and timing"
+      }
+    ],
+    "button": "Prepare sourcing brief",
+    "note": "A sourcing brief is a starting point. Product availability and commercial terms must be confirmed separately."
+  },
+  "footer": {
+    "statement": "KO'S · Korean Original Soul. Begin with the origin.",
+    "illustrationNote": "The journey uses generated artwork to express our ingredient philosophy; it is not footage of contracted farms or current inventory."
+  }
+}

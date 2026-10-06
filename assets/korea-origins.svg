@@ -1,0 +1,85 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="900" viewBox="0 0 800 900" role="img" aria-labelledby="korea-title korea-desc">
+<title id="korea-title">From South Korea, closer to the source</title>
+<desc id="korea-desc">An olive and gold illustrated map of the Korean peninsula. Regional inspiration markers show Chungcheong for ginseng, Jeolla for green tea, the South Coast and Gyeongsang for yuja, and Jeju for tea and citrus. The map does not identify specific supplier farms.</desc>
+<defs>
+  <linearGradient id="land" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#92A375"/><stop offset=".43" stop-color="#657B45"/><stop offset="1" stop-color="#3C512E"/></linearGradient>
+  <linearGradient id="north" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#687153" stop-opacity=".55"/><stop offset="1" stop-color="#3F4737" stop-opacity=".7"/></linearGradient>
+  <linearGradient id="rim" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#B89143" stop-opacity=".45"/><stop offset=".45" stop-color="#E4C65B" stop-opacity=".9"/><stop offset="1" stop-color="#F0DEA0" stop-opacity=".35"/></linearGradient>
+  <radialGradient id="marker-aura"><stop stop-color="#E4C65B" stop-opacity=".22"/><stop offset="1" stop-color="#E4C65B" stop-opacity="0"/></radialGradient>
+  <clipPath id="south-land"><path d="M 352.3,484.7 L 342.7,487.7 L 346.5,503.1 L 359.0,512.4 L 351.3,524.7 L 352.3,540.1 L 337.9,536.2 L 330.2,549.3 L 306.2,543.2 L 301.4,555.5 L 320.6,567.0 L 330.2,578.6 L 332.1,586.3 L 339.8,597.8 L 342.7,609.4 L 354.2,617.1 L 354.2,636.3 L 333.1,642.5 L 335.0,651.8 L 344.6,659.4 L 332.1,671.0 L 317.7,678.7 L 320.6,690.2 L 301.4,701.8 L 320.6,713.3 L 315.8,726.4 L 335.0,728.8 L 330.2,744.1 L 344.6,748.0 L 373.4,726.4 L 397.4,732.6 L 402.2,721.0 L 435.8,724.9 L 443.5,705.6 L 459.8,717.2 L 483.8,709.5 L 519.3,706.4 L 531.8,694.1 L 555.8,695.6 L 584.6,686.4 L 603.8,671.0 L 623.0,640.2 L 613.4,609.4 L 618.2,563.2 L 603.8,517.0 L 555.8,470.8 L 536.6,447.7 L 512.6,422.3 L 495.3,437.7 L 480.9,443.1 L 455.0,436.9 L 435.8,439.2 L 409.9,442.3 L 394.5,453.1 L 375.3,465.4 L 352.3,484.7 Z"/><path d="M 302.4,823.5 L 308.1,818.1 L 319.6,813.4 L 334.0,808.8 L 352.3,805.0 L 365.7,805.8 L 377.2,811.1 L 375.3,818.1 L 363.8,824.2 L 341.7,829.6 L 319.6,831.2 L 306.2,828.8 Z"/></clipPath>
+  <clipPath id="all-land"><path d="M 728.6,81.2 L 696.0,95.0 L 663.3,100.4 L 640.3,121.2 L 598.0,125.8 L 566.4,152.0 L 545.2,160.5 L 515.5,201.3 L 492.4,202.1 L 488.6,183.6 L 469.4,180.5 L 438.7,200.5 L 411.8,201.3 L 375.3,170.5 L 345.6,187.4 L 325.4,216.7 L 287.0,229.0 L 264.0,239.8 L 231.3,260.6 L 191.0,262.9 L 177.6,270.6 L 133.4,282.1 L 114.2,301.4 L 132.4,308.3 L 157.4,319.1 L 164.1,330.7 L 200.6,349.9 L 231.3,363.0 L 234.2,379.9 L 210.2,401.5 L 195.8,411.5 L 189.1,432.3 L 203.5,456.9 L 247.6,458.5 L 263.0,473.9 L 285.1,470.0 L 315.8,478.5 L 352.3,484.7 L 342.7,487.7 L 346.5,503.1 L 359.0,512.4 L 351.3,524.7 L 352.3,540.1 L 337.9,536.2 L 330.2,549.3 L 306.2,543.2 L 301.4,555.5 L 320.6,567.0 L 330.2,578.6 L 332.1,586.3 L 339.8,597.8 L 342.7,609.4 L 354.2,617.1 L 354.2,636.3 L 333.1,642.5 L 335.0,651.8 L 344.6,659.4 L 332.1,671.0 L 317.7,678.7 L 320.6,690.2 L 301.4,701.8 L 320.6,713.3 L 315.8,726.4 L 335.0,728.8 L 330.2,744.1 L 344.6,748.0 L 373.4,726.4 L 397.4,732.6 L 402.2,721.0 L 435.8,724.9 L 443.5,705.6 L 459.8,717.2 L 483.8,709.5 L 519.3,706.4 L 531.8,694.1 L 555.8,695.6 L 584.6,686.4 L 603.8,671.0 L 623.0,640.2 L 613.4,609.4 L 618.2,563.2 L 603.8,517.0 L 555.8,470.8 L 536.6,447.7 L 512.6,422.3 L 498.2,413.0 L 450.2,393.8 L 421.4,370.7 L 431.0,355.3 L 459.8,332.2 L 527.0,316.8 L 555.8,293.7 L 603.8,278.3 L 623.0,255.2 L 642.2,232.1 L 651.8,193.6 L 661.4,162.8 L 738.2,132.0 Z"/></clipPath>
+  <filter id="land-shadow" x="-30%" y="-20%" width="160%" height="145%"><feDropShadow dx="9" dy="14" stdDeviation="14" flood-color="#200A14" flood-opacity=".65"/></filter>
+  <g id="location-dot"><circle r="26" fill="url(#marker-aura)"/><circle r="11" fill="none" stroke="#E4C65B" stroke-width=".7" opacity=".45"/><circle r="5.2" fill="#E4C65B"/><circle r="2.3" fill="#FFF4C9"/></g>
+</defs>
+<!-- Hand-drawn coordinate-based cartography. Region pins are illustrative. -->
+<g fill="none" stroke="#D4B768" opacity=".075" stroke-width="1">
+  <path d="M72 172C100 325 164 374 148 531S147 750 227 826"/>
+  <path d="M40 128C66 307 121 409 113 571S131 786 202 856"/>
+  <path d="M657 231C619 307 578 369 640 456S684 601 621 734"/>
+  <path d="M702 195C666 300 622 366 678 449S728 598 660 746"/>
+  <path d="M745 146C708 295 668 365 718 442S770 589 703 754"/>
+  <path d="M198 801C232 774 312 776 385 786S475 836 429 865"/>
+  <path d="M180 827C215 792 304 795 393 802S494 855 449 883"/>
+</g>
+<g filter="url(#land-shadow)">
+  <path d="M 728.6,81.2 L 696.0,95.0 L 663.3,100.4 L 640.3,121.2 L 598.0,125.8 L 566.4,152.0 L 545.2,160.5 L 515.5,201.3 L 492.4,202.1 L 488.6,183.6 L 469.4,180.5 L 438.7,200.5 L 411.8,201.3 L 375.3,170.5 L 345.6,187.4 L 325.4,216.7 L 287.0,229.0 L 264.0,239.8 L 231.3,260.6 L 191.0,262.9 L 177.6,270.6 L 133.4,282.1 L 114.2,301.4 L 132.4,308.3 L 157.4,319.1 L 164.1,330.7 L 200.6,349.9 L 231.3,363.0 L 234.2,379.9 L 210.2,401.5 L 195.8,411.5 L 189.1,432.3 L 203.5,456.9 L 247.6,458.5 L 263.0,473.9 L 285.1,470.0 L 315.8,478.5 L 352.3,484.7 L 342.7,487.7 L 346.5,503.1 L 359.0,512.4 L 351.3,524.7 L 352.3,540.1 L 337.9,536.2 L 330.2,549.3 L 306.2,543.2 L 301.4,555.5 L 320.6,567.0 L 330.2,578.6 L 332.1,586.3 L 339.8,597.8 L 342.7,609.4 L 354.2,617.1 L 354.2,636.3 L 333.1,642.5 L 335.0,651.8 L 344.6,659.4 L 332.1,671.0 L 317.7,678.7 L 320.6,690.2 L 301.4,701.8 L 320.6,713.3 L 315.8,726.4 L 335.0,728.8 L 330.2,744.1 L 344.6,748.0 L 373.4,726.4 L 397.4,732.6 L 402.2,721.0 L 435.8,724.9 L 443.5,705.6 L 459.8,717.2 L 483.8,709.5 L 519.3,706.4 L 531.8,694.1 L 555.8,695.6 L 584.6,686.4 L 603.8,671.0 L 623.0,640.2 L 613.4,609.4 L 618.2,563.2 L 603.8,517.0 L 555.8,470.8 L 536.6,447.7 L 512.6,422.3 L 498.2,413.0 L 450.2,393.8 L 421.4,370.7 L 431.0,355.3 L 459.8,332.2 L 527.0,316.8 L 555.8,293.7 L 603.8,278.3 L 623.0,255.2 L 642.2,232.1 L 651.8,193.6 L 661.4,162.8 L 738.2,132.0 Z" fill="url(#north)" stroke="#A5AE83" stroke-opacity=".3" stroke-width="1.1" stroke-linejoin="round"/>
+  <path d="M 352.3,484.7 L 342.7,487.7 L 346.5,503.1 L 359.0,512.4 L 351.3,524.7 L 352.3,540.1 L 337.9,536.2 L 330.2,549.3 L 306.2,543.2 L 301.4,555.5 L 320.6,567.0 L 330.2,578.6 L 332.1,586.3 L 339.8,597.8 L 342.7,609.4 L 354.2,617.1 L 354.2,636.3 L 333.1,642.5 L 335.0,651.8 L 344.6,659.4 L 332.1,671.0 L 317.7,678.7 L 320.6,690.2 L 301.4,701.8 L 320.6,713.3 L 315.8,726.4 L 335.0,728.8 L 330.2,744.1 L 344.6,748.0 L 373.4,726.4 L 397.4,732.6 L 402.2,721.0 L 435.8,724.9 L 443.5,705.6 L 459.8,717.2 L 483.8,709.5 L 519.3,706.4 L 531.8,694.1 L 555.8,695.6 L 584.6,686.4 L 603.8,671.0 L 623.0,640.2 L 613.4,609.4 L 618.2,563.2 L 603.8,517.0 L 555.8,470.8 L 536.6,447.7 L 512.6,422.3 L 495.3,437.7 L 480.9,443.1 L 455.0,436.9 L 435.8,439.2 L 409.9,442.3 L 394.5,453.1 L 375.3,465.4 L 352.3,484.7 Z" fill="url(#land)" stroke="url(#rim)" stroke-width="1.7" stroke-linejoin="round"/>
+  <path d="M 302.4,823.5 L 308.1,818.1 L 319.6,813.4 L 334.0,808.8 L 352.3,805.0 L 365.7,805.8 L 377.2,811.1 L 375.3,818.1 L 363.8,824.2 L 341.7,829.6 L 319.6,831.2 L 306.2,828.8 Z" fill="url(#land)" stroke="url(#rim)" stroke-width="1.5" stroke-linejoin="round"/>
+</g>
+<!-- Restrained inland relief echoes the mountain spine and river valleys. -->
+<g clip-path="url(#all-land)" fill="none" stroke="#D7DFB5" stroke-width=".8" opacity=".1">
+  <path d="M595 145C556 235 563 292 513 344S485 424 517 481 511 560 481 588 469 655 474 713"/>
+  <path d="M615 134C579 243 588 300 536 351S508 430 537 486 534 558 505 598 491 669 498 718"/>
+  <path d="M570 164C529 253 540 289 488 338S460 416 491 471 488 552 456 578 444 649 450 715"/>
+  <path d="M530 212C485 284 495 325 448 361S431 432 463 477 451 543 421 576 422 650 417 735"/>
+  <path d="M477 274C442 322 435 370 413 404S401 469 420 501 393 548 386 590 384 666 386 744"/>
+</g>
+<g clip-path="url(#south-land)" fill="none" stroke="#E4C65B" opacity=".28" stroke-width=".8">
+  <path d="M348 544C396 560 409 555 440 545S476 544 510 558 544 558 604 565"/>
+  <path d="M309 613C353 629 387 622 416 613S450 609 473 631 503 650 542 653"/>
+  <path d="M402 578C417 606 428 628 418 651S414 690 433 728"/>
+  <path d="M287 677C337 674 362 687 392 677S429 659 445 667"/>
+  <path d="M485 551C477 580 465 604 473 631"/>
+</g>
+<path d="M 352.3,484.7 L 375.3,465.4 L 394.5,453.1 L 409.9,442.3 L 435.8,439.2 L 455.0,436.9 L 480.9,443.1 L 495.3,437.7 L 512.6,422.3" fill="none" stroke="#E4C65B" stroke-width="1" stroke-dasharray="3 5" opacity=".4"/>
+<!-- Southern islands. -->
+<g fill="#6A7D4D" stroke="#D6B962" stroke-opacity=".4" stroke-width=".7">
+  <path d="M316 754l8-5 10 2-3 7-10 2z"/><path d="M308 730l-6 7 3 6 6-4z"/>
+  <path d="M291 710l-7 4 4 8 6-3z"/><path d="M287 690l-4 3 2 6 5-2z"/>
+  <path d="M343 754l8 3-1 5-9 1z"/><path d="M442 727l7-1 4 7-8 5-5-6z"/>
+  <path d="M501 708l6 4 1 13-8 4-4-10z"/><path d="M514 697l6 2 3 13-6 6-6-9z"/>
+</g>
+<g fill="#E8E0C6" font-family="Arial, Helvetica, sans-serif" font-size="9" letter-spacing="3.7" opacity=".35">
+  <text x="494" y="314" text-anchor="middle" transform="rotate(-22 494 314)">NORTH KOREA</text>
+  <text x="454" y="520" text-anchor="middle" transform="rotate(-16 454 520)" opacity=".8">SOUTH KOREA</text>
+</g>
+<g font-family="Arial, Helvetica, sans-serif" fill="#F0DEA0" font-size="8" letter-spacing="3.1" opacity=".3">
+  <text x="197" y="447" transform="rotate(-90 197 447)">WEST COAST</text>
+  <text x="661" y="531" transform="rotate(90 661 531)">EAST COAST</text>
+</g>
+<g fill="none" stroke="#E4C65B" stroke-width=".9" opacity=".65">
+  <path d="M430.0 608.6L319 580H216"/>
+  <path d="M378.2 698.0L288 716H218"/>
+  <path d="M488.6 694.1L557 656H635"/>
+  <path d="M338.8 818.8L425 832H496"/>
+</g>
+<use href="#location-dot" x="430.0" y="608.6" data-region="chungcheong"/>
+<use href="#location-dot" x="378.2" y="697.9" data-region="jeolla"/>
+<use href="#location-dot" x="488.6" y="694.1" data-region="south-coast"/>
+<use href="#location-dot" x="338.8" y="818.8" data-region="jeju"/>
+<g fill="#F5F0EA" font-family="Georgia, 'Times New Roman', serif" font-size="24">
+  <text x="208" y="576" text-anchor="end">Chungcheong</text>
+  <text x="210" y="712" text-anchor="end">Jeolla</text>
+  <text x="641" y="643" text-anchor="end">South Coast</text>
+  <text x="502" y="825">Jeju</text>
+</g>
+<g fill="#E4C65B" font-family="Arial, Helvetica, sans-serif" font-size="8.5" letter-spacing="2.1">
+  <text x="208" y="597" text-anchor="end">GINSENG ROOTS</text>
+  <text x="210" y="733" text-anchor="end">GREEN TEA &amp; YUJA</text>
+  <text x="641" y="675" text-anchor="end">GYEONGSANG · YUJA</text>
+  <text x="502" y="847">TEA &amp; CITRUS</text>
+</g>
+<g fill="#E4C65B" font-family="Arial, Helvetica, sans-serif" font-size="8" letter-spacing="3" opacity=".6">
+ <text x="400" y="884" text-anchor="middle">KOREA · LAND OF ORIGIN</text>
+</g>
+</svg>

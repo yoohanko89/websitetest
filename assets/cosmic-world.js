@@ -1,0 +1,446 @@
+import * as THREE from './vendor/three.module.js';
+
+// A volumetric galaxy, an illuminated spherical Earth, and a continuous camera
+// flight. All of the scenery is rendered in the site's single WebGL scene.
+const EARTH_RADIUS = 11.5;
+const KOREA_LAT = 37.5;
+const KOREA_LON = 127;
+const GOLD = 0xe0b74d;
+
+function seededRandom(seed = 1729) {
+  return () => {
+    seed = (Math.imul(1664525, seed) + 1013904223) | 0;
+    return (seed >>> 0) / 4294967296;
+  };
+}
+
+const clamp = THREE.MathUtils.clamp;
+const smooth = (value) => {
+  const t = clamp(value, 0, 1);
+  return t * t * (3 - 2 * t);
+};
+
+function geographicVector(latitude, longitude, radius = 1) {
+  const lat = THREE.MathUtils.degToRad(latitude);
+  const lon = THREE.MathUtils.degToRad(longitude);
+  return new THREE.Vector3(
+    Math.cos(lat) * Math.cos(lon) * radius,
+    Math.sin(lat) * radius,
+    -Math.cos(lat) * Math.sin(lon) * radius,
+  );
+}
+
+function makeStarMaterial(size, opacity = 1) {
+  return new THREE.ShaderMaterial({
+    uniforms: { pointSize: { value: size }, opacity: { value: opacity } },
+    vertexColors: true,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    vertexShader: `
+      attribute float starSize;
+      varying vec3 vColor;
+      uniform float pointSize;
+      void main() {
+        vColor = color;
+        vec4 eye = modelViewMatrix * vec4(position, 1.0);
+        gl_Position = projectionMatrix * eye;
+        gl_PointSize = clamp(pointSize * starSize * 240.0 / max(1.0, -eye.z), 1.1, 22.0);
+      }
+    `,
+    fragmentShader: `
+      varying vec3 vColor;
+      uniform float opacity;
+      void main() {
+        vec2 p = gl_PointCoord - vec2(0.5);
+        float distance = length(p) * 2.0;
+        if (distance > 1.0) discard;
+        float halo = exp(-distance * distance * 8.0);
+        float core = exp(-distance * distance * 80.0);
+        gl_FragColor = vec4(vColor * (0.8 + core), halo * opacity);
+      }
+    `,
+  });
+}
+
+function makeGalaxy() {
+  const random = seededRandom(64112);
+  const count = 28500;
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  const sizes = new Float32Array(count);
+  const innerColor = new THREE.Color('#fff0c3');
+  const middleColor = new THREE.Color('#d0a845');
+  const outerColor = new THREE.Color('#a35262');
+  const olive = new THREE.Color('#8f9d69');
+  const color = new THREE.Color();
+  for (let index = 0; index < count; index += 1) {
+    const radius = Math.pow(random(), 0.72) * 115;
+    const branch = index % 5;
+    const twist = radius * 0.052 + (branch / 5) * Math.PI * 2;
+    const scatter = Math.pow(random(), 3) * (8 + radius * 0.11);
+    const angle = twist + (random() - 0.5) * 0.32;
+    const gaussian = (random() + random() + random() - 1.5);
+    positions[index * 3] = Math.cos(angle) * radius + gaussian * scatter;
+    positions[index * 3 + 1] = Math.sin(angle) * radius + (random() - 0.5) * scatter;
+    positions[index * 3 + 2] = gaussian * (1.2 + radius * 0.042);
+    color.copy(innerColor).lerp(middleColor, clamp(radius / 36, 0, 1));
+    color.lerp(outerColor, clamp((radius - 32) / 83, 0, 0.8));
+    if (random() > 0.88) color.lerp(olive, 0.62);
+    color.multiplyScalar(0.6 + random() * 0.65);
+    color.toArray(colors, index * 3);
+    sizes[index] = 0.26 + random() * 0.86 + (random() > 0.995 ? 2.3 : 0);
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  geometry.setAttribute('starSize', new THREE.BufferAttribute(sizes, 1));
+  const galaxy = new THREE.Points(geometry, makeStarMaterial(3.8));
+  galaxy.name = 'Volumetric five-arm Milky Way';
+  galaxy.position.set(0, 0, -240);
+  galaxy.rotation.x = 0.16;
+  return galaxy;
+}
+
+function makeDistantStars() {
+  const random = seededRandom(73115);
+  const count = 1700;
+  const positions = new Float32Array(count * 3);
+  const colors = new Float32Array(count * 3);
+  const sizes = new Float32Array(count);
+  const color = new THREE.Color();
+  for (let index = 0; index < count; index += 1) {
+    const azimuth = random() * Math.PI * 2;
+    const y = random() * 2 - 1;
+    const radius = 480 + random() * 100;
+    const radial = Math.sqrt(1 - y * y);
+    positions[index * 3] = Math.cos(azimuth) * radial * radius;
+    positions[index * 3 + 1] = y * radius;
+    positions[index * 3 + 2] = Math.sin(azimuth) * radial * radius - 110;
+    color.set(random() > 0.75 ? '#d5c5a2' : '#a27682').multiplyScalar(0.5 + random() * 0.6);
+    color.toArray(colors, index * 3);
+    sizes[index] = 0.6 + random() * 0.9;
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+  geometry.setAttribute('starSize', new THREE.BufferAttribute(sizes, 1));
+  return new THREE.Points(geometry, makeStarMaterial(2.3, 0.7));
+}
+
+function decodeTopology(topology) {
+  const { scale, translate } = topology.transform;
+  const arcs = topology.arcs.map((arc) => {
+    let longitude = 0;
+    let latitude = 0;
+    return arc.map((point) => {
+      longitude += point[0];
+      latitude += point[1];
+      return [longitude * scale[0] + translate[0], latitude * scale[1] + translate[1]];
+    });
+  });
+  function stitch(indices) {
+    const ring = [];
+    for (const index of indices) {
+      const points = index < 0 ? [...arcs[~index]].reverse() : arcs[index];
+      ring.push(...(ring.length ? points.slice(1) : points));
+    }
+    return ring;
+  }
+  function polygons(geometry) {
+    if (geometry.type === 'GeometryCollection') return geometry.geometries.flatMap(polygons);
+    if (geometry.type === 'Polygon') return [geometry.arcs.map(stitch)];
+    if (geometry.type === 'MultiPolygon') return geometry.arcs.map((polygon) => polygon.map(stitch));
+    return [];
+  }
+  return {
+    land: polygons(topology.objects.land),
+    korea: topology.objects.countries.geometries
+      .filter((country) => String(country.id) === '410')
+      .flatMap(polygons),
+  };
+}
+
+function tracePolygons(context, polygons, width, height) {
+  context.beginPath();
+  for (const polygon of polygons) {
+    for (const ring of polygon) {
+      if (!ring.length) continue;
+      const points = [];
+      let previous = ring[0][0];
+      for (const [longitude, latitude] of ring) {
+        let unwrapped = longitude;
+        while (unwrapped - previous > 180) unwrapped -= 360;
+        while (unwrapped - previous < -180) unwrapped += 360;
+        points.push([(unwrapped + 180) / 360 * width, (90 - latitude) / 180 * height]);
+        previous = unwrapped;
+      }
+      for (const shift of [-width, 0, width]) {
+        context.moveTo(points[0][0] + shift, points[0][1]);
+        for (const point of points.slice(1)) context.lineTo(point[0] + shift, point[1]);
+        context.closePath();
+      }
+    }
+  }
+}
+
+function makeEarthTexture(topology) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 4096;
+  canvas.height = 2048;
+  const context = canvas.getContext('2d');
+  const gradient = context.createLinearGradient(0, 0, 0, canvas.height);
+  gradient.addColorStop(0, '#24161f');
+  gradient.addColorStop(0.32, '#42202b');
+  gradient.addColorStop(0.66, '#301924');
+  gradient.addColorStop(1, '#21131c');
+  context.fillStyle = gradient;
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  const random = seededRandom(2521);
+  for (let index = 0; index < 15000; index += 1) {
+    context.fillStyle = random() > 0.5 ? 'rgba(201,155,94,0.035)' : 'rgba(5,5,10,0.05)';
+    context.fillRect(random() * canvas.width, random() * canvas.height, 2 + random() * 8, 1);
+  }
+  context.strokeStyle = 'rgba(215,187,112,0.075)';
+  context.lineWidth = 0.8;
+  context.beginPath();
+  for (let lon = 0; lon <= 360; lon += 30) {
+    const x = lon / 360 * canvas.width;
+    context.moveTo(x, 0);
+    context.lineTo(x, canvas.height);
+  }
+  for (let lat = -60; lat <= 60; lat += 30) {
+    const y = (90 - lat) / 180 * canvas.height;
+    context.moveTo(0, y);
+    context.lineTo(canvas.width, y);
+  }
+  context.stroke();
+  if (topology) {
+    const { land, korea } = decodeTopology(topology);
+    tracePolygons(context, land, canvas.width, canvas.height);
+    context.fillStyle = '#78835b';
+    context.fill('evenodd');
+    context.strokeStyle = '#a1a273';
+    context.lineWidth = 1.2;
+    context.stroke();
+    context.save();
+    context.clip('evenodd');
+    for (let index = 0; index < 7500; index += 1) {
+      const y = random() * canvas.height;
+      context.fillStyle = random() > 0.5 ? 'rgba(209,184,94,0.11)' : 'rgba(40,67,34,0.12)';
+      context.beginPath();
+      context.ellipse(random() * canvas.width, y, 3 + random() * 16, 2 + random() * 8, 0, 0, Math.PI * 2);
+      context.fill();
+    }
+    context.restore();
+    tracePolygons(context, korea, canvas.width, canvas.height);
+    context.fillStyle = '#a6b878';
+    context.fill('evenodd');
+    context.strokeStyle = '#e5bd54';
+    context.lineWidth = 1.5;
+    context.stroke();
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.anisotropy = 4;
+  return texture;
+}
+
+function makeAtmosphere() {
+  return new THREE.Mesh(new THREE.SphereGeometry(EARTH_RADIUS * 1.026, 64, 40), new THREE.ShaderMaterial({
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending,
+    side: THREE.BackSide,
+    vertexShader: `
+      varying vec3 worldPosition;
+      varying vec3 worldNormal;
+      void main() {
+        worldPosition = (modelMatrix * vec4(position, 1.0)).xyz;
+        worldNormal = normalize(mat3(modelMatrix) * normal);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      varying vec3 worldPosition;
+      varying vec3 worldNormal;
+      void main() {
+        vec3 view = normalize(cameraPosition - worldPosition);
+        float rim = pow(1.0 - abs(dot(normalize(worldNormal), view)), 3.2);
+        gl_FragColor = vec4(vec3(0.64, 0.64, 0.33), rim * 0.25);
+      }
+    `,
+  }));
+}
+
+export function createCosmicWorld(options = {}) {
+  const group = new THREE.Group();
+  group.name = 'KOS — the universe to Korean origins';
+  const galaxy = makeGalaxy();
+  group.add(galaxy, makeDistantStars());
+
+  const earthSystem = new THREE.Group();
+  const rotatingEarth = new THREE.Group();
+  earthSystem.add(rotatingEarth);
+  const fallbackTexture = makeEarthTexture();
+  const planetMaterial = new THREE.MeshStandardMaterial({
+    map: fallbackTexture,
+    roughness: 0.88,
+    metalness: 0.02,
+    emissive: 0x3c2731,
+    emissiveIntensity: 0.19,
+  });
+  const planet = new THREE.Mesh(new THREE.SphereGeometry(EARTH_RADIUS, 96, 64), planetMaterial);
+  planet.name = 'Geographic Earth — olive land and burgundy ocean';
+  rotatingEarth.add(planet);
+  earthSystem.add(makeAtmosphere());
+  group.add(earthSystem);
+
+  const koreaDirection = geographicVector(KOREA_LAT, KOREA_LON);
+  const beacon = new THREE.Group();
+  beacon.position.copy(koreaDirection.clone().multiplyScalar(EARTH_RADIUS + 0.04));
+  beacon.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), koreaDirection);
+  const markerMaterial = new THREE.MeshBasicMaterial({ color: GOLD, transparent: true });
+  beacon.add(new THREE.Mesh(new THREE.SphereGeometry(0.12, 12, 8), markerMaterial));
+  const signal = new THREE.Mesh(new THREE.RingGeometry(0.26, 0.31, 40), new THREE.MeshBasicMaterial({
+    color: GOLD, transparent: true, opacity: 0.8, side: THREE.DoubleSide, depthWrite: false,
+  }));
+  signal.position.z = 0.05;
+  beacon.add(signal);
+  const pole = new THREE.Line(new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 0, 1.15),
+  ]), new THREE.LineBasicMaterial({ color: GOLD, transparent: true, opacity: 0.5 }));
+  beacon.add(pole);
+  rotatingEarth.add(beacon);
+
+  const orbitPoints = [];
+  for (let index = 0; index <= 256; index += 1) {
+    const angle = index / 256 * Math.PI * 2;
+    orbitPoints.push(new THREE.Vector3(Math.cos(angle) * 45, -14 + Math.sin(angle) * 6, Math.sin(angle) * 45));
+  }
+  const orbit = new THREE.Line(new THREE.BufferGeometry().setFromPoints(orbitPoints), new THREE.LineBasicMaterial({
+    color: 0xcba449, transparent: true, opacity: 0.12,
+  }));
+  orbit.name = 'Orbital path';
+  group.add(orbit);
+  const sun = new THREE.Mesh(new THREE.SphereGeometry(5.4, 28, 20), new THREE.MeshBasicMaterial({ color: 0xe1b552 }));
+  sun.position.set(-76, 18, -8);
+  group.add(sun);
+  const sunlight = new THREE.PointLight(0xffdfa2, 1600, 250, 1.7);
+  sunlight.position.copy(sun.position);
+  group.add(sunlight);
+  const key = new THREE.DirectionalLight(0xf5e6be, 2.1);
+  key.position.set(-18, 24, -36);
+  key.target = earthSystem;
+  group.add(key);
+  const fill = new THREE.HemisphereLight(0xd4d2a4, 0x4b1930, 1.55);
+  group.add(fill);
+
+  const flight = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(18, 48, -55),
+    new THREE.Vector3(-58, 31, -110),
+    new THREE.Vector3(-30, 7, -186),
+    new THREE.Vector3(15, -3, -238),
+    new THREE.Vector3(34, 9, -171),
+    new THREE.Vector3(12, 13, -92),
+    new THREE.Vector3(-18, 14, -43),
+  ], false, 'catmullrom', 0.22);
+  const gaze = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(-4, 0, -240),
+    new THREE.Vector3(4, 0, -247),
+    new THREE.Vector3(19, -3, -236),
+    new THREE.Vector3(30, 8, -205),
+    new THREE.Vector3(4, 2, -67),
+    new THREE.Vector3(0, 0, 0),
+    new THREE.Vector3(0, 0, 0),
+  ], false, 'catmullrom', 0.15);
+  const planetEntry = flight.getPoint(1);
+  let disposed = false;
+  let lastTime = 0;
+  let lastProgress = 0;
+  const axis = new THREE.Vector3(0, 1, 0);
+
+  function koreaWorldDirection() {
+    return koreaDirection.clone().applyAxisAngle(axis, rotatingEarth.rotation.y);
+  }
+
+  function update(time, progress) {
+    lastTime = Number.isFinite(time) ? time : 0;
+    lastProgress = clamp(progress, 0, 1);
+    galaxy.rotation.z = lastTime * 0.0024;
+    const lock = smooth((lastProgress - 0.54) / 0.2);
+    rotatingEarth.rotation.y = THREE.MathUtils.lerp(-1.12 + lastTime * 0.045, -0.647, lock);
+    const orbitalPhase = lastTime * 0.035;
+    earthSystem.position.set(Math.sin(orbitalPhase) * 1.45, 0, (Math.cos(orbitalPhase) - 1) * 1.45);
+    const pulse = 1 + ((lastTime * 0.55) % 1) * 2.5;
+    const beaconOpacity = 1 - smooth((lastProgress - 0.82) / 0.13);
+    signal.scale.setScalar(pulse);
+    signal.material.opacity = 0.72 * (1 - (pulse - 1) / 2.5) * beaconOpacity;
+    markerMaterial.opacity = beaconOpacity;
+    pole.material.opacity = 0.5 * beaconOpacity;
+    beacon.visible = lastProgress > 0.49 && lastProgress < 0.95;
+  }
+
+  function getCamera(progress) {
+    const p = clamp(progress, 0, 1);
+    let position;
+    let target;
+    if (p <= 0.63) {
+      position = flight.getPoint(p / 0.63);
+      target = gaze.getPoint(p / 0.63);
+      if (p > 0.53) target.lerp(earthSystem.position, smooth((p - 0.53) / 0.1));
+    } else {
+      const approach = (p - 0.63) / 0.37;
+      const korea = koreaWorldDirection();
+      const entryDirection = planetEntry.clone().sub(earthSystem.position).normalize();
+      const entryRadius = planetEntry.distanceTo(earthSystem.position);
+      const direction = entryDirection.clone().lerp(korea, smooth(approach)).normalize();
+      // Keep the camera outside the surface even at the end of the Korean zoom.
+      const radius = THREE.MathUtils.lerp(entryRadius, EARTH_RADIUS + 1.4, smooth(approach));
+      position = direction.multiplyScalar(radius).add(earthSystem.position);
+      target = earthSystem.position.clone().add(korea.multiplyScalar(EARTH_RADIUS * smooth((approach - 0.28) / 0.72)));
+    }
+    let landmark = 'Milky Way';
+    if (p > 0.2 && p < 0.43) landmark = 'Inside the galaxy';
+    if (p >= 0.43 && p < 0.77) landmark = 'Earth';
+    if (p >= 0.77) landmark = 'Korea';
+    return { position, target, landmark };
+  }
+
+  const ready = Promise.resolve(options.worldData || fetch(new URL('./world-110m.json', import.meta.url))
+    .then((response) => {
+      if (!response.ok) throw new Error(`World atlas: ${response.status}`);
+      return response.json();
+    }))
+    .then((topology) => {
+      if (disposed) return false;
+      const texture = makeEarthTexture(topology);
+      planetMaterial.map = texture;
+      planetMaterial.needsUpdate = true;
+      fallbackTexture.dispose();
+      return true;
+    })
+    .catch(() => false);
+
+  function dispose() {
+    disposed = true;
+    const geometries = new Set();
+    const materials = new Set();
+    const textures = new Set();
+    group.traverse((object) => {
+      if (object.geometry) geometries.add(object.geometry);
+      if (object.material) {
+        for (const material of Array.isArray(object.material) ? object.material : [object.material]) {
+          materials.add(material);
+          if (material.map) textures.add(material.map);
+        }
+      }
+    });
+    for (const geometry of geometries) geometry.dispose();
+    for (const material of materials) material.dispose();
+    for (const texture of textures) texture.dispose();
+  }
+
+  update(0, 0);
+  return { group, getCamera, update, ready, dispose };
+}

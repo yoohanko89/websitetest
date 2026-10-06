@@ -1,311 +1,67 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KO'S — Korean Original Soul</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@200;300;400;500;600&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --wine:#5C2434;--wine-mid:#7B3244;--wine-lt:#9E4A5A;--wine-pale:rgba(92,36,52,0.06);
-  --olive:#4A5D3A;--olive-mid:#6B7D5A;--olive-lt:#8A9E78;--olive-pale:rgba(74,93,58,0.06);
-  --gold:#B69D6C;--gold-mid:#D4B87A;--gold-lt:#E8D4A0;--gold-pale:rgba(182,157,108,0.08);
-  --ink:#1C1816;--charcoal:#2A2420;--stone:#8A8078;--cream:#F5F0EA;--linen:#FAF7F3;
-  --sh-s:0 1px 3px rgba(28,24,22,0.06);--sh-m:0 8px 30px rgba(28,24,22,0.08);--sh-l:0 20px 50px rgba(28,24,22,0.1);
-}
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;font-size:16px}
-body{font-family:'Outfit','Noto Sans KR',sans-serif;background:var(--cream);color:var(--ink);line-height:1.7;overflow-x:hidden;font-weight:300}
-.ct{max-width:1200px;margin:0 auto;padding:0 2.5rem}
-strong{font-weight:500}
-
-/* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:1000;background:rgba(245,240,234,0.88);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid rgba(28,24,22,0.04);transition:all .5s}
-nav.scrolled{background:rgba(245,240,234,0.96);box-shadow:var(--sh-s)}
-.nav-i{max-width:1200px;margin:0 auto;padding:0 2.5rem;display:flex;justify-content:space-between;align-items:center;height:76px}
-.logo{font-family:'DM Serif Display',serif;font-size:1.7rem;color:var(--wine);text-decoration:none;cursor:pointer;letter-spacing:.05em}
-.logo em{font-style:italic;color:var(--gold)}
-.nlinks{display:flex;gap:2.8rem;list-style:none;align-items:center}
-.nlinks a{text-decoration:none;color:var(--charcoal);font-size:.78rem;font-weight:400;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;transition:color .3s;position:relative}
-.nlinks a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--gold);transition:width .4s}
-.nlinks a:hover,.nlinks a.active{color:var(--wine)}
-.nlinks a:hover::after,.nlinks a.active::after{width:100%}
-.ncta{background:var(--wine)!important;color:var(--cream)!important;padding:.65rem 2rem!important;letter-spacing:.14em!important;transition:all .4s!important}
-.ncta::after{display:none!important}
-.ncta:hover{background:var(--ink)!important}
-.ham{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
-.ham span{width:22px;height:1.5px;background:var(--ink);transition:all .3s}
-
-/* PAGES */
-.pg{display:none;animation:pgIn .7s cubic-bezier(.25,.46,.45,.94)}
-.pg.active{display:block}
-@keyframes pgIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-
-/* HERO */
-.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden;background:var(--ink)}
-.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 40%,rgba(92,36,52,0.3) 0%,transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(74,93,58,0.15) 0%,transparent 50%)}
-.hero::after{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23B69D6C' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
-.hero-ct{position:relative;z-index:2;max-width:620px;padding:8rem 2.5rem 5rem;margin-left:max(2rem,10vw)}
-.hero-tag{display:inline-flex;align-items:center;gap:.8rem;margin-bottom:2.5rem;animation:fadeUp .8s ease .2s both}
-.hero-tag span{height:1px;width:40px;background:var(--gold)}
-.hero-tag em{font-style:normal;font-size:.7rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);font-weight:400}
-.hero h1{font-family:'DM Serif Display',serif;font-size:clamp(2.6rem,5.5vw,4.2rem);font-weight:400;line-height:1.2;color:var(--cream);margin-bottom:1.5rem;animation:fadeUp .8s ease .4s both}
-.hero h1 i{font-style:italic;color:var(--gold-mid)}
-.hero-p{font-size:1rem;line-height:2;color:rgba(245,240,234,0.55);font-weight:300;max-width:480px;margin-bottom:3rem;animation:fadeUp .8s ease .6s both}
-.hero-btns{display:flex;gap:1rem;animation:fadeUp .8s ease .8s both}
-.btn-g{padding:1rem 2.8rem;font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;font-weight:400;cursor:pointer;transition:all .4s;border:none;font-family:'Outfit',sans-serif;text-decoration:none}
-.btn-g.filled{background:var(--gold);color:var(--ink)}
-.btn-g.filled:hover{background:var(--gold-mid);transform:translateY(-2px);box-shadow:0 8px 24px rgba(182,157,108,0.3)}
-.btn-g.outline{background:transparent;color:var(--cream);border:1px solid rgba(245,240,234,0.2)}
-.btn-g.outline:hover{border-color:var(--gold);color:var(--gold)}
-
-.hero-aside{position:absolute;right:8%;top:50%;transform:translateY(-50%);display:flex;flex-direction:column;gap:1.5rem;animation:floatIn 1s ease 1.2s both}
-.aside-item{border-left:1px solid rgba(182,157,108,0.3);padding-left:1.2rem}
-.aside-item .al{font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.2rem}
-.aside-item .av{font-size:.9rem;color:var(--cream);font-weight:300}
-
-/* SECTIONS */
-.sec{padding:7rem 0}
-.sec.dark{background:var(--ink);color:var(--cream)}
-.sec.linen{background:var(--linen)}
-.slabel{font-size:.68rem;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:400;margin-bottom:1rem}
-.stitle{font-family:'DM Serif Display',serif;font-size:2.2rem;font-weight:400;line-height:1.3;margin-bottom:1rem}
-.ssub{font-size:.92rem;color:var(--stone);max-width:520px;line-height:1.9}
-.sheader{text-align:center;margin-bottom:4rem}
-.sheader .ssub{margin:0 auto}
-
-/* IDENTITY CARDS */
-.id-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem}
-.idc{padding:2.5rem;border:1px solid rgba(28,24,22,0.06);background:white;transition:all .5s;position:relative;overflow:hidden}
-.idc::before{content:'';position:absolute;top:0;left:0;width:0;height:2px;background:linear-gradient(90deg,var(--wine),var(--gold));transition:width .5s}
-.idc:hover::before{width:100%}
-.idc:hover{box-shadow:var(--sh-m)}
-.idc-icon{font-size:1.8rem;margin-bottom:1.2rem}
-.idc-en{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem;display:block;font-weight:400}
-.idc h3{font-family:'DM Serif Display',serif;font-size:1.15rem;font-weight:400;margin-bottom:.8rem}
-.idc p{font-size:.84rem;color:var(--stone);line-height:1.8}
-
-/* PRODUCTS */
-.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(350px,1fr));gap:1.5rem}
-.pcard{background:white;border:1px solid rgba(28,24,22,0.04);overflow:hidden;transition:all .5s;position:relative}
-.pcard:hover{box-shadow:var(--sh-l);transform:translateY(-4px)}
-.pcard-img{height:300px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
-.pcard-img svg{width:180px;height:220px;transition:transform .6s}
-.pcard:hover .pcard-img svg{transform:scale(1.05)}
-.pcard-img.food{background:linear-gradient(160deg,#F5EEE4,#EDE4D6)}
-.pcard-img.beauty{background:linear-gradient(160deg,#EDF0EC,#E0E6DC)}
-.pbadge{position:absolute;top:1.2rem;left:1.2rem;font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;padding:.35rem 1rem;font-weight:500;color:white}
-.pbadge.best{background:var(--wine)}.pbadge.new{background:var(--olive)}.pbadge.hot{background:var(--gold);color:var(--ink)}
-.prank{position:absolute;top:1rem;right:1.2rem;font-family:'DM Serif Display',serif;font-size:2.5rem;color:rgba(28,24,22,0.06)}
-.pinfo{padding:2rem}
-.pcat{font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.4rem;font-weight:400}
-.pname{font-family:'DM Serif Display',serif;font-size:1.15rem;font-weight:400;margin-bottom:.2rem}
-.pname-en{font-size:.75rem;color:var(--stone);margin-bottom:.8rem;font-weight:300}
-.pdesc{font-size:.82rem;color:rgba(28,24,22,0.5);line-height:1.8;margin-bottom:1rem}
-.ptags{display:flex;gap:.4rem;flex-wrap:wrap;margin-bottom:1.2rem}
-.ptag{font-size:.64rem;padding:.25rem .7rem;border:1px solid rgba(28,24,22,0.08);color:var(--stone);letter-spacing:.04em}
-.pbot{display:flex;justify-content:space-between;align-items:center;border-top:1px solid rgba(28,24,22,0.05);padding-top:1rem}
-.pprice{font-family:'DM Serif Display',serif;font-size:1.35rem}
-.pprice .pusd{font-size:.75rem;color:var(--stone);margin-left:.5rem;font-family:'Outfit',sans-serif;font-weight:300}
-.pcart{padding:.6rem 1.6rem;background:var(--wine);color:var(--cream);border:none;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;font-family:'Outfit',sans-serif;transition:all .3s;font-weight:400}
-.pcart:hover{background:var(--ink)}
-.cdiv{text-align:center;margin:2rem 0 3rem;position:relative}
-.cdiv::before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(28,24,22,0.06)}
-.cdiv span{background:var(--linen);padding:0 2rem;position:relative;font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--wine);font-weight:400}
-
-/* GLOBAL */
-.ghero{padding:10rem 0 5rem;background:var(--ink);color:var(--cream);text-align:center;position:relative;overflow:hidden}
-.ghero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(92,36,52,0.2) 0%,transparent 70%)}
-.srow{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;margin-top:3rem}
-.sbox{text-align:center}
-.sbox .sn{font-family:'DM Serif Display',serif;font-size:3rem;color:var(--gold)}
-.sbox .sl{font-size:.68rem;letter-spacing:.15em;text-transform:uppercase;color:rgba(245,240,234,0.4);margin-top:.4rem}
-.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem}
-.scard{padding:2.5rem;background:white;border:1px solid rgba(28,24,22,0.04);position:relative;overflow:hidden}
-.scard::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--wine),var(--gold))}
-.scard .sph{font-size:.62rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);font-weight:400;margin-bottom:.5rem}
-.scard h3{font-family:'DM Serif Display',serif;font-size:1.2rem;font-weight:400;margin-bottom:.8rem}
-.scard p{font-size:.84rem;color:var(--stone);line-height:1.8}
-.scard .slist{margin-top:1rem;font-size:.82rem;color:rgba(28,24,22,0.5);line-height:2.1}
-.scard .slist strong{color:var(--wine);font-weight:500}
-.vbox{background:linear-gradient(135deg,var(--wine),var(--wine-mid));color:var(--cream);padding:4rem;margin-top:3rem;text-align:center}
-.vbox h2{font-family:'DM Serif Display',serif;font-size:2rem;font-weight:400;margin-bottom:1.5rem}
-.vbox p{font-size:.95rem;line-height:2;opacity:.85;max-width:680px;margin:0 auto}
-
-/* TIMELINE */
-.tl{margin-top:4rem;position:relative}
-.tl::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(28,24,22,0.08);transform:translateX(-50%)}
-.tli{display:flex;align-items:center;margin-bottom:3rem;position:relative}
-.tli:nth-child(odd){flex-direction:row-reverse}
-.tld{width:12px;height:12px;border-radius:50%;background:var(--gold);position:absolute;left:50%;transform:translateX(-50%);z-index:2;box-shadow:0 0 0 4px var(--cream)}
-.tlc{width:42%;padding:2rem;background:white;border:1px solid rgba(28,24,22,0.04)}
-.tli:nth-child(odd) .tlc{margin-right:auto;text-align:right}
-.tli:nth-child(even) .tlc{margin-left:auto}
-.tly{font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--wine)}
-.tlt{font-weight:500;font-size:.9rem;margin:.3rem 0 .5rem}
-.tltx{font-size:.82rem;color:var(--stone);line-height:1.7}
-
-/* STORY */
-.shero{padding:10rem 0 5rem;background:var(--ink);text-align:center;position:relative;overflow:hidden}
-.shero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 30% 60%,rgba(74,93,58,0.15) 0%,transparent 50%),radial-gradient(ellipse at 70% 30%,rgba(92,36,52,0.2) 0%,transparent 50%)}
-.sch{padding:4rem 0;max-width:760px;margin:0 auto}
-.sch-n{font-family:'DM Serif Display',serif;font-size:3.5rem;color:var(--gold-lt);font-weight:400;margin-bottom:.5rem;opacity:.4}
-.sch-t{font-family:'DM Serif Display',serif;font-size:1.7rem;font-weight:400;margin-bottom:1.5rem}
-.sch-b{font-size:.95rem;line-height:2.2;color:rgba(28,24,22,0.6);font-weight:300}
-.sch-b strong{color:var(--ink);font-weight:500}
-.sch-b em{color:var(--wine);font-style:normal;font-weight:400}
-.sch-q{border-left:2px solid var(--gold);padding:2rem 2.5rem;margin:2rem 0;background:var(--gold-pale);font-style:italic;color:rgba(28,24,22,0.55);line-height:2.1;font-size:.92rem}
-.sch-q strong{color:var(--wine);font-style:normal}
-.sch-img{height:240px;margin:2rem 0;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
-.sch-img.si1{background:linear-gradient(135deg,#2a2830,#1e2228)}
-.sch-img.si2{background:linear-gradient(135deg,#f0e8dc,#e8ddd0)}
-.sch-img.si3{background:linear-gradient(135deg,#e8ece6,#dce2d8)}
-.sch-img.si4{background:linear-gradient(135deg,#3a2030,#2a1620)}
-.sch-sep{width:40px;height:1px;background:var(--gold);margin:4rem auto}
-.scta{text-align:center;padding:5rem 0;background:var(--ink);color:var(--cream)}
-.scta h2{font-family:'DM Serif Display',serif;font-size:1.8rem;font-weight:400;margin-bottom:1rem}
-.scta p{color:rgba(245,240,234,0.5);margin-bottom:2rem;font-size:.9rem}
-
-/* NEWSLETTER */
-.nl{padding:5rem 0;background:var(--wine);color:var(--cream);text-align:center}
-.nl h2{font-family:'DM Serif Display',serif;font-size:1.8rem;font-weight:400;margin-bottom:.8rem}
-.nl p{font-size:.88rem;opacity:.7;margin-bottom:2rem;font-weight:300}
-.nlf{display:flex;gap:0;max-width:480px;margin:0 auto}
-.nlf input{flex:1;padding:1rem 1.5rem;border:none;font-size:.88rem;font-family:'Outfit',sans-serif;background:rgba(255,255,255,0.1);color:var(--cream);font-weight:300;border:1px solid rgba(255,255,255,0.15)}
-.nlf input::placeholder{color:rgba(245,240,234,0.35)}
-.nlf button{padding:1rem 2rem;background:var(--gold);color:var(--ink);border:none;cursor:pointer;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;font-weight:400;font-family:'Outfit',sans-serif;transition:all .3s;white-space:nowrap}
-.nlf button:hover{background:var(--gold-mid)}
-
-/* FOOTER */
-footer{padding:4rem 0 2rem;background:var(--ink);color:rgba(245,240,234,0.5)}
-.fgrid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
-.fbrand p{font-size:.82rem;line-height:1.9;max-width:260px;margin-top:1rem}
-.fcol h4{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);opacity:.5;margin-bottom:1.2rem;font-weight:400}
-.fcol ul{list-style:none}.fcol li{margin-bottom:.6rem}
-.fcol a{text-decoration:none;color:rgba(245,240,234,0.5);font-size:.82rem;transition:color .3s;cursor:pointer;font-weight:300}
-.fcol a:hover{color:var(--gold)}
-.fbot{border-top:1px solid rgba(245,240,234,0.06);padding-top:2rem;display:flex;justify-content:space-between;align-items:center;font-size:.72rem;font-weight:300}
-.fsoc{display:flex;gap:1.5rem}
-.fsoc a{text-decoration:none;color:rgba(245,240,234,0.3);transition:color .3s;font-size:.75rem;letter-spacing:.1em;cursor:pointer}
-.fsoc a:hover{color:var(--gold)}
-
-/* MISSION BOX */
-.mbox{background:var(--ink);color:var(--cream);padding:4rem;margin-top:3rem}
-.mbox .slabel{color:var(--gold)}
-.mbox h2{font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--cream);margin-bottom:1.5rem;font-weight:400}
-.mbox p{color:rgba(245,240,234,0.6);font-weight:300;line-height:2;font-size:.92rem}
-
-/* VALUES */
-.vsec{display:grid;grid-template-columns:1fr 1fr;gap:4rem;align-items:center}
-.vvis{position:relative;height:380px;display:flex;align-items:center;justify-content:center}
-.vcircle{width:240px;height:240px;border-radius:50%;background:linear-gradient(135deg,var(--wine),var(--wine-mid));display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;text-align:center;box-shadow:var(--sh-l)}
-.vcircle .vb{font-family:'DM Serif Display',serif;font-size:3.5rem}
-.vcircle .vs{font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;opacity:.7;margin-top:.5rem;font-weight:300}
-.oi{position:absolute;background:white;padding:.6rem 1rem;box-shadow:var(--sh-m);font-size:.72rem;font-weight:400;letter-spacing:.06em;border-left:2px solid var(--gold)}
-.oi-1{top:10%;right:5%}.oi-2{bottom:10%;right:0}.oi-3{bottom:5%;left:5%}.oi-4{top:5%;left:0}
-
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-@keyframes floatIn{from{opacity:0;transform:translate(30px,-50%)}to{opacity:1;transform:translate(0,-50%)}}
-.rv{opacity:0;transform:translateY(20px);transition:all .8s cubic-bezier(.25,.46,.45,.94)}
-.rv.vis{opacity:1;transform:translateY(0)}
-
-@media(max-width:1024px){.hero-aside{display:none}.hero-ct{margin-left:2rem}.id-grid,.sgrid{grid-template-columns:1fr 1fr}.vsec{grid-template-columns:1fr}.srow{grid-template-columns:repeat(2,1fr)}.tl::before{left:20px}.tld{left:20px}.tli,.tli:nth-child(odd){flex-direction:row}.tlc,.tli:nth-child(odd) .tlc{width:calc(100% - 50px);margin-left:45px!important;margin-right:0!important;text-align:left!important}.fgrid{grid-template-columns:1fr 1fr}}
-@media(max-width:768px){.nlinks{display:none}.ham{display:flex}.nlinks.open{display:flex;flex-direction:column;position:absolute;top:76px;left:0;right:0;background:rgba(245,240,234,0.98);padding:2rem;gap:1.5rem;border-bottom:1px solid rgba(28,24,22,0.06)}.hero{min-height:90vh}.hero-ct{padding-top:8rem;margin-left:1rem}.id-grid,.sgrid{grid-template-columns:1fr}.pgrid{grid-template-columns:1fr}.srow{grid-template-columns:1fr 1fr}.fgrid{grid-template-columns:1fr}.fbot{flex-direction:column;gap:1rem;text-align:center}.nlf{flex-direction:column}.nlf button{width:100%}.vvis{height:auto;padding:2rem 0}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#351020">
+  <title>KO&#x27;S | Korean Tea, Matcha, Yuzu &amp; Ginseng Ingredients</title>
+  <meta name="description" content="Explore Korean green tea, matcha, yuzu and ginseng with KO&#x27;S. A guide to ingredient origins, processing and the specifications international buyers should verify.">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="KO'S — Korean Original Soul">
+  <meta property="og:title" content="KO&#x27;S | Korean Tea, Matcha, Yuzu &amp; Ginseng Ingredients">
+  <meta property="og:description" content="Explore Korean green tea, matcha, yuzu and ginseng with KO&#x27;S. A guide to ingredient origins, processing and the specifications international buyers should verify.">
+  <meta property="og:locale" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preload" as="image" href="assets/galaxy.webp">
+  <script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "Organization", "@id": "#organization", "name": "KO'S", "alternateName": "Korean Original Soul", "description": "An ingredient-focused Korean brand exploring tea, yuzu and ginseng."}, {"@type": "WebPage", "name": "KO'S | Korean Tea, Matcha, Yuzu & Ginseng Ingredients", "description": "Explore Korean green tea, matcha, yuzu and ginseng with KO'S. A guide to ingredient origins, processing and the specifications international buyers should verify.", "inLanguage": "en", "about": {"@id": "#organization"}}]}</script>
+  <script type="module" src="app.js"></script>
+  <link rel="canonical" href="https://yoohanko89.github.io/websitetest/">
+  <meta property="og:url" content="https://yoohanko89.github.io/websitetest/">
+  <meta property="og:image" content="https://yoohanko89.github.io/websitetest/assets/fresh-yuzu.webp">
 </head>
 <body>
-
-<nav id="nb"><div class="nav-i"><a class="logo" onclick="go('home')">KO<em>'</em>S</a><ul class="nlinks" id="nl"><li><a onclick="go('brand')" id="n-brand">브랜드</a></li><li><a onclick="go('products')" id="n-products">제품</a></li><li><a onclick="go('global')" id="n-global">글로벌</a></li><li><a onclick="go('story')" id="n-story">스토리</a></li><li><a class="ncta" onclick="go('products')">SHOP</a></li></ul><button class="ham" onclick="document.getElementById('nl').classList.toggle('open')"><span></span><span></span><span></span></button></div></nav>
-
-<!-- ════ HOME ════ -->
-<div class="pg active" id="pg-home">
-<section class="hero"><div class="hero-ct"><div class="hero-tag"><span></span><em>Korean Original Soul · Est. 2026</em></div><h1>한국의 <i>진심</i>을<br>세계의 일상으로</h1><p class="hero-p">자연에서 온 한국의 건강한 식재료와 전통 지혜를 담은 K-Beauty. KO'S는 한국의 본질을 세계에 전합니다.</p><div class="hero-btns"><button class="btn-g filled" onclick="go('products')">제품 보기</button><button class="btn-g outline" onclick="go('story')">브랜드 스토리</button></div></div><div class="hero-aside"><div class="aside-item"><div class="al">Ingredients</div><div class="av">100% 자연유래</div></div><div class="aside-item"><div class="al">Shipping</div><div class="av">전 세계 배송</div></div><div class="aside-item"><div class="al">Standard</div><div class="av">EU · FDA 인증</div></div></div></section>
-<section class="sec linen"><div class="ct"><div class="sheader rv"><div class="slabel">Why KO'S</div><h2 class="stitle">왜 KO'S인가</h2><p class="ssub">10년간 유럽에서 살며 깨달은 한국의 진짜 가치를 담았습니다</p></div><div class="id-grid"><div class="idc rv"><div class="idc-icon">🌿</div><span class="idc-en">Natural</span><h3>자연 그대로</h3><p>한국의 청정 원료를 최소한의 가공으로. 방부제, 인공색소, 화학첨가물을 넣지 않습니다.</p></div><div class="idc rv"><div class="idc-icon">🏺</div><span class="idc-en">Heritage</span><h3>전통의 지혜</h3><p>수백 년 이어온 발효 기술, 한방 성분의 과학적 효능을 현대적 제품에 담습니다.</p></div><div class="idc rv"><div class="idc-icon">🌍</div><span class="idc-en">Global Standard</span><h3>글로벌 기준</h3><p>EU 코스메틱 규정, FDA 기준에 맞춘 품질 관리. 세계 어디서나 안심하세요.</p></div><div class="idc rv"><div class="idc-icon">🤝</div><span class="idc-en">Bridge</span><h3>한국과 세계의 다리</h3><p>독일에서 10년, 유럽 전역을 누빈 경험이 한국의 가치를 세계에 전달합니다.</p></div></div></div></section>
-</div>
-
-<!-- ════ BRAND ════ -->
-<div class="pg" id="pg-brand">
-<section style="padding:10rem 0 5rem;background:var(--ink);text-align:center;position:relative;overflow:hidden"><div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 50%,rgba(92,36,52,0.15) 0%,transparent 60%)"></div><div class="ct" style="position:relative;z-index:2"><div class="rv"><div class="slabel" style="color:var(--gold)">Brand Identity</div><h1 class="stitle" style="color:var(--cream);font-size:clamp(2rem,4.5vw,3.2rem)">KO'S는<br><em style="font-family:'DM Serif Display',serif;font-style:italic;color:var(--gold)">Korean Original Soul</em>입니다</h1><p style="font-size:1rem;line-height:2;color:rgba(245,240,234,0.55);max-width:640px;margin:0 auto;font-weight:300">KO'S는 단순한 브랜드 이름이 아닙니다. Korean Original Soul — 한국의 원래 그 맛, 원래 그 아름다움을 담겠다는 약속입니다.</p></div></div></section>
-<section class="sec linen"><div class="ct"><div class="sheader rv"><div class="slabel">Core Values</div><h2 class="stitle">브랜드 핵심 가치</h2></div><div class="id-grid"><div class="idc rv"><div class="idc-icon">🍯</div><span class="idc-en">Authenticity · 진정성</span><h3>진짜 한국의 것</h3><p>트렌드에 맞춘 '한국풍'이 아니라, 한국에서 대대로 만들어온 진짜를 담습니다. 고추장은 3년 숙성, 세럼은 제주 유기농 원료.</p></div><div class="idc rv"><div class="idc-icon">🔬</div><span class="idc-en">Innovation · 혁신</span><h3>전통 위의 과학</h3><p>발효의 지혜에 현대 바이오 기술을 더합니다. PDRN, 엑소좀, 센텔라 같은 첨단 성분을 한방 원료와 결합합니다.</p></div><div class="idc rv"><div class="idc-icon">♻️</div><span class="idc-en">Sustainability</span><h3>지구를 생각하는 정성</h3><p>리필 가능한 패키지, 생분해성 포장재, 탄소 중립 배송. 한국의 '아끼는 문화'를 현대적으로 실천합니다.</p></div><div class="idc rv"><div class="idc-icon">🤝</div><span class="idc-en">Bridge · 연결</span><h3>한국과 세계의 다리</h3><p>독일에서 10년을 살며 느낀 문화의 교차점. 한국의 가치를 세계가 이해할 수 있는 언어로 전달합니다.</p></div></div></div></section>
-<section class="sec"><div class="ct"><div class="vsec rv"><div class="vvis"><div class="vcircle"><div class="vb">魂</div><div class="vs">Korean Original Soul</div></div><div class="oi oi-1">🌿 Clean Beauty</div><div class="oi oi-2">🏺 K-Heritage</div><div class="oi oi-3">🔬 Bio Science</div><div class="oi oi-4">🌍 Global Local</div></div><div><div class="slabel">Brand Promise</div><h2 class="stitle">우리의 약속</h2><p style="font-size:.92rem;color:var(--stone);line-height:2;margin-bottom:1.5rem">KO'S의 모든 식품은 한국 농가에서 직접 수매한 국산 원료만을 사용합니다. 모든 화장품은 피부과 전문의 자문 하에 개발되며, 동물실험을 하지 않습니다.</p><p style="font-size:.92rem;color:var(--stone);line-height:2">한국의 할머니가 만든 된장처럼, 한국의 어머니가 발라준 동백기름처럼 — 시간이 지나도 변하지 않는 가치를 전합니다.</p></div></div><div class="mbox rv"><div class="slabel">Mission</div><h2>"한국의 진심이 세계의 일상이 되는 그 날까지"</h2><p>KO'S는 한국의 식문화와 뷰티 헤리티지를 세계인의 일상에 자연스럽게 녹여내는 것을 사명으로 합니다.</p></div></div></section>
-</div>
-
-<!-- ════ PRODUCTS ════ -->
-<div class="pg" id="pg-products">
-<section style="padding:10rem 0 3rem;text-align:center;background:var(--ink);position:relative;overflow:hidden"><div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 60%,rgba(74,93,58,0.12) 0%,transparent 50%)"></div><div class="ct" style="position:relative;z-index:2"><div class="rv"><div class="slabel" style="color:var(--gold)">Our Products</div><h1 class="stitle" style="color:var(--cream);font-size:clamp(2rem,4vw,3rem)">정성을 담은 제품들</h1><p class="ssub" style="color:rgba(245,240,234,0.5);margin:0 auto">한국 식품과 K-Beauty의 글로벌 베스트셀러를 KO'S만의 철학으로 재해석했습니다</p></div></div></section>
-
-<section class="sec linen"><div class="ct">
-<div class="cdiv rv"><span>K-FOOD · TOP 5</span></div>
-<div class="pgrid">
-
-<div class="pcard rv"><div class="pcard-img food"><svg viewBox="0 0 180 220"><defs><linearGradient id="jg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#5C2434"/><stop offset="100%" stop-color="#7B3244"/></linearGradient></defs><rect x="45" y="50" width="90" height="130" rx="8" fill="url(#jg)"/><rect x="50" y="55" width="80" height="120" rx="6" fill="none" stroke="#B69D6C" stroke-width=".5" opacity=".5"/><rect x="35" y="40" width="110" height="20" rx="4" fill="#5C2434"/><rect x="55" y="42" width="70" height="16" rx="2" fill="none" stroke="#B69D6C" stroke-width=".5"/><text x="90" y="100" text-anchor="middle" fill="#B69D6C" font-family="DM Serif Display" font-size="11">KO'S</text><text x="90" y="118" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="6" font-family="Outfit" letter-spacing="2">GOCHUJANG</text><text x="90" y="132" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="5" font-family="Outfit">3 YEARS AGED</text><circle cx="90" cy="155" r="8" fill="none" stroke="#B69D6C" stroke-width=".5"/><text x="90" y="158" text-anchor="middle" fill="#B69D6C" font-size="6" font-family="DM Serif Display">魂</text></svg><div class="pbadge best">BEST #1</div><div class="prank">#1</div></div><div class="pinfo"><div class="pcat">K-Food · Fermented</div><div class="pname">KO'S 전통 발효 고추장</div><div class="pname-en">Artisan Gochujang · Aged 3 Years</div><div class="pdesc">태양초 100%로 만든 3년 숙성 전통 고추장. 옹기에서 자연 발효시켜 깊은 매운맛과 감칠맛을 동시에.</div><div class="ptags"><span class="ptag">3년 숙성</span><span class="ptag">무첨가</span><span class="ptag">태양초 100%</span></div><div class="pbot"><div class="pprice">₩18,000 <span class="pusd">$13.50</span></div><button class="pcart">ADD TO CART</button></div></div></div>
-
-<div class="pcard rv"><div class="pcard-img food"><svg viewBox="0 0 180 220"><rect x="40" y="55" width="100" height="120" rx="6" fill="#4A5D3A"/><rect x="44" y="59" width="92" height="112" rx="4" fill="none" stroke="#B69D6C" stroke-width=".5" opacity=".4"/><path d="M60 55 L90 30 L120 55" fill="#4A5D3A" stroke="#B69D6C" stroke-width=".5"/><text x="90" y="100" text-anchor="middle" fill="#B69D6C" font-family="DM Serif Display" font-size="11">KO'S</text><text x="90" y="116" text-anchor="middle" fill="rgba(255,255,255,0.7)" font-size="5.5" font-family="Outfit" letter-spacing="2">KIMCHI</text><text x="90" y="130" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="5" font-family="Outfit">PREMIUM WHOLE</text><rect x="65" y="148" width="50" height="1" fill="#B69D6C" opacity=".3"/><text x="90" y="162" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="4.5" font-family="Outfit" letter-spacing="1">JEONRADO</text></svg><div class="pbadge hot">HOT</div><div class="prank">#2</div></div><div class="pinfo"><div class="pcat">K-Food · Fermented</div><div class="pname">KO'S 프리미엄 포기김치</div><div class="pname-en">Premium Whole Napa Kimchi</div><div class="pdesc">전라도 해남 배추, 영양 고춧가루, 신안 천일염 정통 포기김치. 유산균 10억 마리 이상 함유. 진공 포장.</div><div class="ptags"><span class="ptag">전라도 레시피</span><span class="ptag">프로바이오틱스</span><span class="ptag">진공포장</span></div><div class="pbot"><div class="pprice">₩22,000 <span class="pusd">$16.50</span></div><button class="pcart">ADD TO CART</button></div></div></div>
-
-<div class="pcard rv"><div class="pcard-img food"><svg viewBox="0 0 180 220"><rect x="30" y="65" width="120" height="90" rx="4" fill="#1C1816"/><rect x="34" y="69" width="112" height="82" rx="2" fill="none" stroke="#B69D6C" stroke-width=".5" opacity=".4"/><rect x="50" y="80" width="80" height="12" fill="#5C2434"/><text x="90" y="89" text-anchor="middle" fill="#B69D6C" font-family="DM Serif Display" font-size="7">KO'S SEAWEED</text><text x="90" y="115" text-anchor="middle" fill="#B69D6C" font-family="DM Serif Display" font-size="10">조미김</text><text x="90" y="130" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="5" font-family="Outfit" letter-spacing="2">GIFT SET · 5 FLAVORS</text><rect x="55" y="140" width="10" height="6" rx="1" fill="#5C2434" opacity=".6"/><rect x="68" y="140" width="10" height="6" rx="1" fill="#4A5D3A" opacity=".6"/><rect x="81" y="140" width="10" height="6" rx="1" fill="#B69D6C" opacity=".6"/><rect x="94" y="140" width="10" height="6" rx="1" fill="#7B3244" opacity=".6"/><rect x="107" y="140" width="10" height="6" rx="1" fill="#6B7D5A" opacity=".6"/></svg><div class="pbadge new">NEW</div><div class="prank">#3</div></div><div class="pinfo"><div class="pcat">K-Food · Snack</div><div class="pname">KO'S 구운 조미김 세트</div><div class="pname-en">Premium Roasted Seaweed · Gift Set</div><div class="pdesc">완도산 돌김을 참기름으로 구운 프리미엄 조미김. 오리지널, 와사비, 트러플, 김치, 불고기 5종.</div><div class="ptags"><span class="ptag">완도 돌김</span><span class="ptag">5종 세트</span><span class="ptag">참기름 구이</span></div><div class="pbot"><div class="pprice">₩25,000 <span class="pusd">$18.70</span></div><button class="pcart">ADD TO CART</button></div></div></div>
-
-<div class="pcard rv"><div class="pcard-img food"><svg viewBox="0 0 180 220"><ellipse cx="90" cy="140" rx="42" ry="8" fill="#3a3020" opacity=".15"/><rect x="55" y="60" width="70" height="85" rx="35" fill="#6B7D5A"/><rect x="59" y="64" width="62" height="77" rx="31" fill="none" stroke="#B69D6C" stroke-width=".5" opacity=".4"/><rect x="62" y="35" width="56" height="30" rx="4" fill="#4A5D3A"/><text x="90" y="53" text-anchor="middle" fill="#B69D6C" font-family="DM Serif Display" font-size="8">KO'S</text><text x="90" y="100" text-anchor="middle" fill="white" font-family="DM Serif Display" font-size="9">된장</text><text x="90" y="115" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="4.5" font-family="Outfit" letter-spacing="1.5">DOENJANG</text><text x="90" y="128" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="4" font-family="Outfit">2 YEARS FERMENTED</text></svg><div class="prank">#4</div></div><div class="pinfo"><div class="pcat">K-Food · Fermented</div><div class="pname">KO'S 국산콩 전통 된장</div><div class="pname-en">Traditional Doenjang · Soybean Paste</div><div class="pdesc">국산 콩 100%, 전통 옹기 발효 2년. 파스타, 샐러드 드레싱에도 어울리는 한국의 깊은 맛.</div><div class="ptags"><span class="ptag">국산콩 100%</span><span class="ptag">2년 발효</span><span class="ptag">옹기 숙성</span></div><div class="pbot"><div class="pprice">₩15,000 <span class="pusd">$11.20</span></div><button class="pcart">ADD TO CART</button></div></div></div>
-
-<div class="pcard rv"><div class="pcard-img food"><svg viewBox="0 0 180 220"><rect x="55" y="45" width="70" height="130" rx="6" fill="#7B3244"/><rect x="59" y="49" width="62" height="122" rx="4" fill="none" stroke="#B69D6C" stroke-width=".5" opacity=".3"/><rect x="50" y="40" width="80" height="12" rx="3" fill="#5C2434"/><circle cx="90" cy="90" r="18" fill="none" stroke="#B69D6C" stroke-width=".5"/><text x="90" y="94" text-anchor="middle" fill="#B69D6C" font-family="DM Serif Display" font-size="9">KO'S</text><text x="90" y="125" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-size="5" font-family="Outfit" letter-spacing="2">TTEOKBOKKI</text><text x="90" y="138" text-anchor="middle" fill="rgba(255,255,255,0.5)" font-size="5" font-family="Outfit">ALL-IN-ONE SAUCE</text><path d="M80 155 L90 148 L100 155" fill="none" stroke="#B69D6C" stroke-width=".5"/></svg><div class="pbadge best">VIRAL</div><div class="prank">#5</div></div><div class="pinfo"><div class="pcat">K-Food · Sauce</div><div class="pname">KO'S 만능 떡볶이 소스</div><div class="pname-en">Tteokbokki All-in-One Sauce</div><div class="pdesc">SNS 바이럴 K-소스. 고추장+물엿+간장 황금비율. 치킨윙, 파스타, 타코에도 활용 가능.</div><div class="ptags"><span class="ptag">SNS 바이럴</span><span class="ptag">올인원</span><span class="ptag">글로벌 셰프 추천</span></div><div class="pbot"><div class="pprice">₩12,000 <span class="pusd">$9.00</span></div><button class="pcart">ADD TO CART</button></div></div></div>
-</div>
-</div></section>
-
-<section class="sec"><div class="ct">
-<div class="cdiv rv"><span>K-BEAUTY · TOP 5</span></div>
-<div class="pgrid">
-
-<div class="pcard rv"><div class="pcard-img beauty"><svg viewBox="0 0 180 220"><rect x="65" y="70" width="50" height="100" rx="4" fill="white" stroke="#5C2434" stroke-width="1"/><rect x="60" y="50" width="60" height="24" rx="3" fill="#5C2434"/><rect x="72" y="54" width="36" height="16" rx="1" fill="none" stroke="#B69D6C" stroke-width=".5"/><text x="90" y="64" text-anchor="middle" fill="#B69D6C" font-size="5" font-family="Outfit" letter-spacing="1.5">KO'S</text><rect x="70" y="42" width="20" height="12" rx="2" fill="#5C2434"/><text x="90" y="105" text-anchor="middle" fill="#5C2434" font-family="DM Serif Display" font-size="7">Snail</text><text x="90" y="116" text-anchor="middle" fill="#5C2434" font-family="DM Serif Display" font-size="7">Mucin</text><text x="90" y="130" text-anchor="middle" fill="#B69D6C" font-size="4" font-family="Outfit" letter-spacing="1.5">96 ESSENCE</text><rect x="75" y="138" width="30" height="1" fill="#B69D6C" opacity=".4"/><text x="90" y="150" text-anchor="middle" fill="rgba(92,36,52,0.3)" font-size="4" font-family="Outfit">100ml</text></svg><div class="pbadge best">BEST #1</div><div class="prank">#1</div></div><div class="pinfo"><div class="pcat">K-Beauty · Essence</div><div class="pname">KO'S 달팽이 뮤신 리페어 에센스</div><div class="pname-en">Snail Mucin 96 Repair Essence</div><div class="pdesc">달팽이 분비 여과물 96% 함유. 피부 장벽 복구, 잡티·흉터 케어. K-Beauty 부동의 1위 카테고리.</div><div class="ptags"><span class="ptag">뮤신 96%</span><span class="ptag">피부장벽</span><span class="ptag">올스킨</span></div><div class="pbot"><div class="pprice">₩28,000 <span class="pusd">$21.00</span></div><button class="pcart">ADD TO CART</button></div></div></div>
-
-<div class="pcard rv"><div class="pcard-img beauty"><svg viewBox="0 0 180 220"><ellipse cx="90" cy="115" rx="35" ry="35" fill="white" stroke="#4A5D3A" stroke-width="1"/><ellipse cx="90" cy="115" rx="30" ry="30" fill="none" stroke="#B69D6C" stroke-width=".3"/><rect x="75" y="72" width="30" height="14" rx="3" fill="#4A5D3A"/><text x="90" y="82" text-anchor="middle" fill="#B69D6C" font-size="5" font-family="Outfit" letter-spacing="1">KO'S</text><text x="90" y="112" text-anchor="middle" fill="#4A5D3A" font-family="DM Serif Display" font-size="7">Cica</text><text x="90" y="123" text-anchor="middle" fill="#4A5D3A" font-family="DM Serif Display" font-size="7">Barrier</text><text x="90" y="135" text-anchor="middle" fill="#B69D6C" font-size="3.5" font-family="Outfit" letter-spacing="1.5">REPAIR CREAM</text><text x="90" y="155" text-anchor="middle" fill="rgba(74,93,58,0.3)" font-size="4" font-family="Outfit">50ml</text></svg><div class="pbadge hot">HOT</div><div class="prank">#2</div></div><div class="pinfo"><div class="pcat">K-Beauty · Cream</div><div class="pname">KO'S 시카 장벽 강화 크림</div><div class="pname-en">Centella Barrier Repair Cream</div><div class="pdesc">센텔라 아시아티카 + 한국산 병풀 듀얼 포뮬러. 민감성 피부, 시술 후 회복에 피부과 추천.</div><div class="ptags"><span class="ptag">센텔라</span><span class="ptag">피부과 추천</span><span class="ptag">민감성</span></div><div class="pbot"><div class="pprice">₩32,000 <span class="pusd">$24.00</span></div><button class="pcart">ADD TO CART</button></div></div></div>
-
-<div class="pcard rv"><div class="pcard-img beauty"><svg viewBox="0 0 180 220"><path d="M80 170 L80 65 Q80 55 90 55 Q100 55 100 65 L100 170 Q100 175 90 175 Q80 175 80 170Z" fill="white" stroke="#5C2434" stroke-width="1"/><rect x="82" y="60" width="16" height="8" rx="2" fill="#B69D6C"/><rect x="76" y="48" width="28" height="16" rx="4" fill="#5C2434"/><text x="90" y="58" text-anchor="middle" fill="#B69D6C" font-size="4.5" font-family="Outfit" letter-spacing="1">KO'S</text><text x="90" y="100" text-anchor="middle" fill="#5C2434" font-family="DM Serif Display" font-size="6" transform="rotate(-90,90,100)">Ginseng</text><text x="90" y="145" text-anchor="middle" fill="#B69D6C" font-size="3.5" font-family="Outfit" letter-spacing="1">PDRN SERUM</text><text x="90" y="160" text-anchor="middle" fill="rgba(92,36,52,0.3)" font-size="3.5" font-family="Outfit">30ml</text></svg><div class="pbadge new">2026</div><div class="prank">#3</div></div><div class="pinfo"><div class="pcat">K-Beauty · Serum</div><div class="pname">KO'S 인삼 글로우 세럼</div><div class="pname-en">Ginseng + PDRN Glow Serum</div><div class="pdesc">6년근 고려 인삼 + 차세대 성분 PDRN. 메디코스메틱 트렌드 반영 프리미엄 안티에이징 세럼.</div><div class="ptags"><span class="ptag">6년근 인삼</span><span class="ptag">PDRN</span><span class="ptag">안티에이징</span></div><div class="pbot"><div class="pprice">₩45,000 <span class="pusd">$33.70</span></div><button class="pcart">ADD TO CART</button></div></div></div>
-
-<div class="pcard rv"><div class="pcard-img beauty"><svg viewBox="0 0 180 220"><circle cx="90" cy="110" r="38" fill="white" stroke="#4A5D3A" stroke-width="1"/><circle cx="90" cy="110" r="33" fill="none" stroke="#B69D6C" stroke-width=".3"/><rect x="70" y="60" width="40" height="20" rx="10" fill="#4A5D3A"/><text x="90" y="73" text-anchor="middle" fill="#B69D6C" font-size="5" font-family="Outfit" letter-spacing="1">KO'S</text><text x="90" y="107" text-anchor="middle" fill="#4A5D3A" font-family="DM Serif Display" font-size="6.5">Camellia</text><text x="90" y="118" text-anchor="middle" fill="#4A5D3A" font-family="DM Serif Display" font-size="6.5">Cleansing</text><text x="90" y="130" text-anchor="middle" fill="#B69D6C" font-size="3.5" font-family="Outfit" letter-spacing="1.5">OIL</text><text x="90" y="155" text-anchor="middle" fill="rgba(74,93,58,0.3)" font-size="4" font-family="Outfit">200ml</text></svg><div class="prank">#4</div></div><div class="pinfo"><div class="pcat">K-Beauty · Cleanser</div><div class="pname">KO'S 동백 딥 클렌징 오일</div><div class="pname-en">Camellia Deep Cleansing Oil</div><div class="pdesc">제주산 동백오일 베이스. 메이크업을 부드럽게 녹이고 보습막 형성. 이중세안 불필요.</div><div class="ptags"><span class="ptag">동백오일</span><span class="ptag">이중세안 불필요</span><span class="ptag">제주산</span></div><div class="pbot"><div class="pprice">₩24,000 <span class="pusd">$18.00</span></div><button class="pcart">ADD TO CART</button></div></div></div>
-
-<div class="pcard rv"><div class="pcard-img beauty"><svg viewBox="0 0 180 220"><ellipse cx="90" cy="120" rx="40" ry="15" fill="#5C2434"/><ellipse cx="90" cy="108" rx="40" ry="15" fill="white" stroke="#5C2434" stroke-width="1"/><ellipse cx="90" cy="108" rx="35" ry="12" fill="none" stroke="#B69D6C" stroke-width=".3"/><text x="90" y="105" text-anchor="middle" fill="#5C2434" font-family="DM Serif Display" font-size="6">KO'S</text><text x="90" y="113" text-anchor="middle" fill="#B69D6C" font-size="3" font-family="Outfit" letter-spacing="1.5">GLOW FIT CUSHION</text><rect x="80" y="75" width="20" height="20" rx="10" fill="#5C2434" opacity=".1"/><text x="90" y="88" text-anchor="middle" fill="#5C2434" font-size="5" font-family="Outfit" font-weight="500">50+</text><text x="90" y="70" text-anchor="middle" fill="#B69D6C" font-size="3.5" font-family="Outfit" letter-spacing="1">SPF</text><text x="90" y="145" text-anchor="middle" fill="rgba(92,36,52,0.3)" font-size="4" font-family="Outfit">40 SHADES</text></svg><div class="pbadge best">VIRAL</div><div class="prank">#5</div></div><div class="pinfo"><div class="pcat">K-Beauty · Sun Care</div><div class="pname">KO'S 글로우 핏 선쿠션</div><div class="pname-en">Glow Fit Sun Cushion SPF50+</div><div class="pdesc">선크림 + 메이크업 베이스 올인원. 40가지 셰이드로 모든 피부톤 커버. 히알루론산·스쿠알렌 함유.</div><div class="ptags"><span class="ptag">SPF50+</span><span class="ptag">40 셰이드</span><span class="ptag">올톤 커버</span></div><div class="pbot"><div class="pprice">₩35,000 <span class="pusd">$26.20</span></div><button class="pcart">ADD TO CART</button></div></div></div>
-</div>
-</div></section>
-</div>
-
-<!-- ════ GLOBAL ════ -->
-<div class="pg" id="pg-global">
-<section class="ghero"><div class="ct"><div class="rv"><div class="slabel" style="color:var(--gold)">Global Strategy</div><h1 class="stitle" style="color:var(--cream);font-size:clamp(2rem,4vw,3rem)">한국에서 세계로</h1><p class="ssub" style="color:rgba(245,240,234,0.5);margin:0 auto">K-푸드 수출 123억 달러, K-뷰티 수출 114억 달러 시대. KO'S는 이 흐름의 중심에 서겠습니다.</p></div><div class="srow rv"><div class="sbox"><div class="sn">25+</div><div class="sl">목표 진출국</div></div><div class="sbox"><div class="sn">$237B</div><div class="sl">K-Food+Beauty</div></div><div class="sbox"><div class="sn">3</div><div class="sl">대륙 거점</div></div><div class="sbox"><div class="sn">2030</div><div class="sl">100개국 비전</div></div></div></div></section>
-<section class="sec"><div class="ct"><div class="sheader rv"><div class="slabel">Roadmap</div><h2 class="stitle">4단계 글로벌 전략</h2></div>
-<div class="sgrid">
-<div class="scard rv"><div class="sph">Phase 1 · 2026</div><h3>유럽 교두보 확보</h3><p>독일 베를린을 유럽 거점으로 DACH 지역 우선 진출.</p><div class="slist"><strong>→</strong> 독일 아시안 마켓·온라인몰 입점<br><strong>→</strong> Shopify 다국어 D2C 쇼핑몰<br><strong>→</strong> 베를린·뮌헨 팝업스토어<br><strong>→</strong> K-Beauty 인플루언서 협업</div></div>
-<div class="scard rv"><div class="sph">Phase 2 · 2027</div><h3>북미 시장 본격 진출</h3><p>틱톡·인스타 바이럴과 아마존 입점으로 북미 공략.</p><div class="slist"><strong>→</strong> Amazon US/Canada + FBA<br><strong>→</strong> 틱톡 #KOSChallenge 캠페인<br><strong>→</strong> 올리브영 글로벌몰 입점<br><strong>→</strong> LA·NYC 팝업 이벤트</div></div>
-<div class="scard rv"><div class="sph">Phase 3 · 2028</div><h3>아시아·오세아니아 확장</h3><p>K-컬처 친숙 지역 + 오세아니아로 확대.</p><div class="slist"><strong>→</strong> 일본 Qoo10·라쿠텐 입점<br><strong>→</strong> 싱가포르·태국·대만 유통<br><strong>→</strong> 호주 클린뷰티 채널 입점<br><strong>→</strong> 현지 식품 박람회 참가</div></div>
-<div class="scard rv"><div class="sph">Phase 4 · 2029–2030</div><h3>글로벌 100개국 비전</h3><p>자체 물류와 AI 서비스로 K-라이프스타일 브랜드 도약.</p><div class="slist"><strong>→</strong> 3대 대륙 물류센터 구축<br><strong>→</strong> AI 맞춤 식단·스킨케어 추천<br><strong>→</strong> '한국의 계절' 구독 서비스<br><strong>→</strong> B2B 도매·OEM 확장</div></div>
-</div>
-<div class="vbox rv"><h2>"2030, 세계인의 일상에 한국이 있다"</h2><p>베를린 아침 식탁에 KO'S 김치가, 뉴욕 여성의 저녁 루틴에 KO'S 세럼이, 도쿄 카페에 KO'S 고추장 파스타가 놓이는 것 — 한국의 진심이 세계인의 일상이 되는 것이 우리의 꿈입니다.</p></div>
-<div class="sheader rv" style="margin-top:5rem"><div class="slabel">Timeline</div><h2 class="stitle">성장 로드맵</h2></div>
-<div class="tl"><div class="tli rv"><div class="tld"></div><div class="tlc"><div class="tly">2026</div><div class="tlt">브랜드 런칭 & 유럽 첫 발</div><div class="tltx">Shopify D2C 오픈, 독일·한국 동시 런칭.</div></div></div><div class="tli rv"><div class="tld"></div><div class="tlc"><div class="tly">2027</div><div class="tlt">북미 진출 & SNS 바이럴</div><div class="tltx">아마존 입점, 틱톡 100만 팔로워. 월 매출 5억 원.</div></div></div><div class="tli rv"><div class="tld"></div><div class="tlc"><div class="tly">2028</div><div class="tlt">아시아 확장 & 플래그십</div><div class="tltx">일본·동남아 진출. 성수동 KO'S 플래그십 오픈.</div></div></div><div class="tli rv"><div class="tld"></div><div class="tlc"><div class="tly">2030</div><div class="tlt">글로벌 K-라이프스타일</div><div class="tltx">100개국 진출, 연 매출 500억 원.</div></div></div></div>
-</div></section>
-</div>
-
-<!-- ════ STORY ════ -->
-<div class="pg" id="pg-story">
-<section class="shero"><div class="ct"><div class="rv"><div class="slabel" style="color:var(--gold)">Our Story</div><h1 class="stitle" style="color:var(--cream);font-size:clamp(2rem,4vw,3rem)">베를린 골목에서 시작된<br>한국의 맛과 향</h1><p class="ssub" style="color:rgba(245,240,234,0.5);margin:0 auto">KO'S가 탄생하기까지의 이야기</p></div></div></section>
-<section class="sec linen"><div class="ct">
-<div class="sch rv"><div class="sch-n">01</div><div class="sch-t">베를린의 부엌에서 흘린 눈물</div><div class="sch-img si1"><svg viewBox="0 0 400 200"><rect x="150" y="60" width="100" height="80" rx="4" fill="none" stroke="rgba(182,157,108,0.3)" stroke-width="1"/><circle cx="200" cy="100" r="25" fill="none" stroke="rgba(182,157,108,0.2)" stroke-width="1"/><text x="200" y="105" text-anchor="middle" fill="rgba(182,157,108,0.4)" font-family="DM Serif Display" font-size="14">Berlin</text><text x="200" y="160" text-anchor="middle" fill="rgba(245,240,234,0.2)" font-size="8" font-family="Outfit" letter-spacing="3">WINTER 2016</text></svg></div><div class="sch-b"><p>2016년 겨울, 베를린. 크리스마스 마켓의 글뤼바인 향이 거리를 가득 채운 그 날, 저는 작은 부엌에서 혼자 김치찌개를 끓이고 있었습니다.</p><br><p>독일에 온 지 벌써 3년. 아시안 마트에서 산 김치는 시큼한 맛만 남아 있었고, 고추장은 달기만 했습니다. <strong>한국의 그 맛이 아니었어요.</strong></p><br><p>그날 어머니에게 전화를 걸었습니다. "엄마, 된장 좀 보내줘." 통화를 끊고 나서 생각했습니다 — <em>나 같은 사람이 얼마나 많을까?</em></p><div class="sch-q">"그 김치찌개 한 그릇이 제 인생을 바꿨습니다. 맛없는 김치찌개가 오히려 질문을 던졌어요 — 왜 한국의 진짜 맛은 세계로 나가지 못할까?"</div></div></div>
-<div class="sch-sep"></div>
-<div class="sch rv"><div class="sch-n">02</div><div class="sch-t">뷰르스트 앞에서 발견한 K-Beauty</div><div class="sch-img si2"><svg viewBox="0 0 400 200"><rect x="160" y="50" width="30" height="80" rx="4" fill="none" stroke="rgba(92,36,52,0.2)" stroke-width="1"/><circle cx="220" cy="90" r="25" fill="none" stroke="rgba(92,36,52,0.15)" stroke-width="1"/><rect x="260" y="55" width="25" height="70" rx="12" fill="none" stroke="rgba(92,36,52,0.2)" stroke-width="1"/><text x="200" y="160" text-anchor="middle" fill="rgba(28,24,22,0.15)" font-size="8" font-family="Outfit" letter-spacing="3">SPRING 2018</text></svg></div><div class="sch-b"><p>2018년, 독일 동료 안나가 점심시간에 물었어요.</p><br><p><strong>"너 피부 왜 이렇게 좋아? 대체 뭘 바르는 거야?"</strong></p><br><p>한국에서 가져온 평범한 세럼과 선크림이었습니다. 안나는 성분표를 보더니 눈이 동그래졌어요. 그 다음 달, 안나의 친구 8명이 한국 화장품 리스트를 보내왔습니다.</p><div class="sch-q">"안나가 궁금해한 건 세럼의 성분이 아니었어요. 한국 여성들이 세대를 걸쳐 전해온 <strong>'피부에 대한 정성'</strong> 그 자체였습니다."</div></div></div>
-<div class="sch-sep"></div>
-<div class="sch rv"><div class="sch-n">03</div><div class="sch-t">고추장 파스타가 터진 그 날</div><div class="sch-img si3"><svg viewBox="0 0 400 200"><ellipse cx="200" cy="110" rx="60" ry="20" fill="none" stroke="rgba(74,93,58,0.2)" stroke-width="1"/><path d="M160 110 Q180 60 200 80 Q220 60 240 110" fill="none" stroke="rgba(92,36,52,0.15)" stroke-width="1"/><text x="200" y="160" text-anchor="middle" fill="rgba(28,24,22,0.15)" font-size="8" font-family="Outfit" letter-spacing="3">SUMMER 2022</text></svg></div><div class="sch-b"><p>2022년, 베를린 홈파티. 준비한 메뉴는 <strong>'고추장 크림 파스타'</strong>.</p><br><p>독일인, 프랑스인, 터키인, 브라질인 — 8개국 친구들이 한 입 먹더니 테이블이 조용해졌어요. <strong>"이게 뭐야... 이 맛이 뭐야!"</strong></p><br><p>그날 밤, 고추장 두 병을 다 썼고, 모든 친구들이 "어디서 살 수 있어?"라고 물었습니다.</p><div class="sch-q">"내가 직접 만들자. 한국의 진짜를 세계에 전하자."<br><br>그리고 그 옆에 세 글자를 적었습니다 — <strong>KO'S</strong>. Korean Original Soul.</div></div></div>
-<div class="sch-sep"></div>
-<div class="sch rv"><div class="sch-n">04</div><div class="sch-t">그래서 KO'S가 태어났습니다</div><div class="sch-img si4"><svg viewBox="0 0 400 200"><circle cx="200" cy="100" r="40" fill="none" stroke="rgba(182,157,108,0.3)" stroke-width="1"/><text x="200" y="95" text-anchor="middle" fill="rgba(182,157,108,0.5)" font-family="DM Serif Display" font-size="20">KO'S</text><text x="200" y="115" text-anchor="middle" fill="rgba(182,157,108,0.3)" font-size="6" font-family="Outfit" letter-spacing="3">SINCE 2026</text></svg></div><div class="sch-b"><p>2024년, 한국으로 돌아와 전국을 돌았습니다. 전라도 고추장 명인, 완도 김 양식장, 제주 동백나무 농장, 충북 인삼밭.</p><br><p>18개월간 200개 이상의 원료를 테스트. 2026년, 마침내 KO'S가 세상에 나왔습니다.</p><br><p style="text-align:center;margin-top:3rem;font-family:'DM Serif Display',serif;font-size:1.4rem;color:var(--wine)">— 한국의 진심을 세계의 일상으로 —<br><span style="font-size:.78rem;color:var(--gold);font-family:'Outfit',sans-serif;letter-spacing:.2em;font-weight:300">Korean Original Soul · Since 2026</span></p></div></div>
-</div></section>
-<section class="scta"><div class="ct rv"><h2>KO'S의 이야기에 함께하세요</h2><p>한국의 진심이 담긴 제품을 직접 경험해보세요</p><button class="btn-g filled" onclick="go('products')">제품 보러가기</button></div></section>
-</div>
-
-<section class="nl"><div class="ct"><div class="rv"><h2>KO'S 소식 받아보기</h2><p>신제품 출시, 특별 할인, 한국 식문화 이야기를 가장 먼저</p><div class="nlf"><input type="email" placeholder="이메일 주소를 입력하세요"><button onclick="alert('감사합니다! 🎉')">구독하기</button></div></div></div></section>
-<footer><div class="ct"><div class="fgrid"><div class="fbrand"><a class="logo" onclick="go('home')" style="color:var(--cream)">KO<em style="color:var(--gold)">'</em>S</a><p>한국의 진심을 세계의 일상으로.</p></div><div class="fcol"><h4>제품</h4><ul><li><a onclick="go('products')">K-Food</a></li><li><a onclick="go('products')">K-Beauty</a></li><li><a onclick="go('products')">베스트셀러</a></li></ul></div><div class="fcol"><h4>회사</h4><ul><li><a onclick="go('brand')">브랜드</a></li><li><a onclick="go('global')">글로벌</a></li><li><a onclick="go('story')">스토리</a></li></ul></div><div class="fcol"><h4>고객지원</h4><ul><li><a>배송 안내</a></li><li><a>교환/반품</a></li><li><a>FAQ</a></li></ul></div></div><div class="fbot"><div>© 2026 KO'S — Korean Original Soul</div><div class="fsoc"><a>Instagram</a><a>YouTube</a><a>TikTok</a></div></div></div></footer>
-
-<script>
-function go(p){document.querySelectorAll('.pg').forEach(x=>x.classList.remove('active'));var t=document.getElementById('pg-'+p);if(t)t.classList.add('active');document.querySelectorAll('.nlinks a:not(.ncta)').forEach(a=>a.classList.remove('active'));var n=document.getElementById('n-'+p);if(n)n.classList.add('active');document.getElementById('nl').classList.remove('open');window.scrollTo({top:0,behavior:'smooth'});setTimeout(initRv,100)}
-window.addEventListener('scroll',()=>{document.getElementById('nb').classList.toggle('scrolled',window.scrollY>50)});
-function initRv(){var o=new IntersectionObserver((e)=>{e.forEach((en,i)=>{if(en.isIntersecting){setTimeout(()=>en.target.classList.add('vis'),i*60);o.unobserve(en.target)}})},{threshold:0.1});document.querySelectorAll('.rv:not(.vis)').forEach(el=>o.observe(el))}
-initRv();
-</script>
+<a class="skip-link" href="#ingredients">Skip the visual journey</a>
+<header class="site-header" id="site-header">
+  <a class="logo" href="#top" aria-label="KO'S home">KO<span>'</span>S</a>
+  <button class="menu-toggle" type="button" aria-label="Open navigation" aria-controls="main-nav" aria-expanded="false"><span></span><span></span></button>
+  <nav id="main-nav" aria-label="Main navigation"><a href="#ingredients">Ingredients</a><a href="#sourcing">Our philosophy</a><a href="#buyers">For buyers</a><a class="nav-cta" href="#inquiry">Sourcing inquiry <span aria-hidden="true">↗</span></a></nav>
+</header>
+<main id="top">
+  <section class="cosmic-journey" id="cosmic-journey" aria-labelledby="hero-title">
+    <div class="journey-stage" id="journey-stage">
+      <img class="film-poster" src="assets/galaxy.webp" alt="Golden spiral galaxy in the KO'S burgundy universe." width="1536" height="864" fetchpriority="high">
+      <canvas id="journey-canvas" aria-label="3D camera journey from a galaxy to Earth, Korea, and Korean ingredient farms"></canvas>
+      <div class="film-shade" aria-hidden="true"></div>
+      <div class="journey-copy copy-galaxy"><p class="eyebrow">KO&#x27;S · Korean Original Soul</p><h1 id="hero-title">A universe of life.<br><em>An origin<br>worth knowing.</em></h1><p class="hero-description">Across a galaxy. Down to Earth. Through Korea.<br>A journey to the leaf, the fruit and the living root.</p><div class="hero-actions"><a class="button button-gold" href="#ingredients">Explore the ingredients <span aria-hidden="true">↗</span></a><a class="button button-outline" href="#inquiry">For international buyers</a></div></div>
+      <div class="film-caption"><p class="eyebrow" id="film-chapter">01 / THE UNIVERSE</p><p id="film-landmark">Milky Way</p></div>
+      <p class="film-status" id="film-status" role="status">Preparing your 3D journey…</p>
+      <div class="film-controls" role="group" aria-label="3D film controls" hidden>
+        <div class="film-buttons"><button type="button" id="film-play" aria-label="Pause the 3D journey">Pause</button><button type="button" id="film-replay">Replay</button><span class="film-time" id="film-time">0:00 / 1:23</span><a href="#origins">Skip journey <span aria-hidden="true">↓</span></a></div>
+        <label class="visually-hidden" for="film-seek">Move through the 3D journey</label><input type="range" id="film-seek" min="0" max="83" step="0.1" value="0" aria-valuetext="Milky Way, 0 seconds">
+        <div class="film-chapters" aria-label="Jump to a scene"><button type="button" data-time="0">Galaxy</button><button type="button" data-time="13">Earth</button><button type="button" data-time="23">Korea</button><button type="button" data-time="31">Jeju</button><button type="button" data-time="37">Sea</button><button type="button" data-time="43">Maisan</button><button type="button" data-time="49">Buseoksa</button><button type="button" data-time="62">Tea</button><button type="button" data-time="71">Yuzu</button><button type="button" data-time="80">Ginseng</button></div>
+      </div>
+      <noscript><p class="film-nojs">Enable JavaScript to play the 3D journey. Explore the ingredients below.</p></noscript>
+    </div>
+  </section>
+  <section class="origin-intro section-shell" id="origins" aria-labelledby="origin-title"><p class="eyebrow">The Korean growing landscape</p><div class="intro-grid"><h2 id="origin-title">Origin is more<br>than a place<br><em>on a map.</em></h2><div><p>Our journey draws inspiration from Jeju, Korea&#x27;s southern coast, Jeolla, Gyeongsang and Chungcheong. These landscapes introduce how climate, cultivation and harvest shape ingredients. They are a visual introduction to Korea, rather than a map of confirmed KO&#x27;S suppliers.</p><p>For a sourcing decision, the useful story is specific: the named farm or processor, country and region of origin, harvest date and the records attached to the actual lot. A regional reputation is a starting point for questions, not a substitute for traceability.</p><div class="region-list"><span>Jeju</span><span>South coast</span><span>Jeolla</span><span>Gyeongsang</span><span>Chungcheong</span></div><p class="art-note">The opening is a real-time 3D artistic interpretation of Korean landscapes and farms. The ingredient photographs are generated artwork. Neither depicts confirmed suppliers or current inventory.</p></div></div></section>
+  <section class="ingredients" id="ingredients" aria-labelledby="ingredients-title"><div class="ingredient-heading section-shell"><p class="eyebrow">LEAF / FRUIT / ROOT</p><h2 id="ingredients-title">The essential comes first.</h2><p>Korean green tea and matcha, aromatic yuzu, and ginseng.<br>Explore the character of each ingredient—and the details behind it.</p></div><article class="ingredient ingredient-tea" id="tea" aria-labelledby="tea-title">
+      <figure class="ingredient-photo reveal"><img src="assets/fresh-tea.webp" alt="Illustrated tea landscape, inspired by the freshness of newly growing leaves." width="512" height="1024" loading="lazy" decoding="async"><figcaption>Illustrated tea landscape, inspired by the freshness of newly growing leaves.</figcaption><span class="photo-index" aria-hidden="true">01</span></figure>
+      <div class="ingredient-text reveal"><p class="eyebrow">Olive green · The leaf</p><h3 id="tea-title">Green tea &amp; matcha</h3><p class="ingredient-deck">A fresh leaf. Two distinct expressions.</p><p>Green tea and matcha begin with the tea plant, Camellia sinensis. For green tea, heat after picking limits oxidation; leaves are then shaped and dried. The result depends on cultivar, picking season and processing. A vivid leaf in the field does not tell the whole story of the finished tea.</p><p>Matcha is finely milled tea made from leaves grown with a shading stage and processed for grinding. Conventional matcha production uses tencha: steamed, dried leaves prepared without the rolling used for many other green teas, with stems and veins removed before milling. Not every green tea powder is matcha. Buyers should ask about shading, leaf preparation, milling and storage, then evaluate a sample in the intended drink or recipe.</p><div class="spec-note"><span>Buyer notes</span><p>Ask about cultivar, harvest, processing, particle size, sensory profile and light-resistant packaging.</p></div><a class="text-link" href="#inquiry" data-ingredient="Green tea &amp; matcha">Discuss this ingredient <span aria-hidden="true">↗</span></a></div>
+    </article><article class="ingredient ingredient-yuzu" id="yuzu" aria-labelledby="yuzu-title">
+      <figure class="ingredient-photo reveal"><img src="assets/fresh-yuzu.webp" alt="Illustrated yuzu orchard, celebrating fruit on the branch before harvest." width="512" height="1024" loading="lazy" decoding="async"><figcaption>Illustrated yuzu orchard, celebrating fruit on the branch before harvest.</figcaption><span class="photo-index" aria-hidden="true">02</span></figure>
+      <div class="ingredient-text reveal"><p class="eyebrow">Gold yellow · The fruit</p><h3 id="yuzu-title">Yuzu / Yuja</h3><p class="ingredient-deck">Sunlight held in a fragrant peel.</p><p>Yuja is the Korean name for yuzu, Citrus junos. Its aromatic peel and tart juice bring different qualities to beverages, sauces and confectionery. Picture fruit on the branch: textured skin, green leaves and the moment before picking. Preserving that character depends on the handling after harvest.</p><p>Fresh fruit, juice, peel, puree and sweetened preparations are different buying specifications. Clarify whether a proposed ingredient includes sugar, seeds, peel or other additions. Compare acidity, soluble solids, processing method and storage conditions. For a formulated product, taste the sample at the actual usage level so that aroma, sweetness and bitterness can be judged together.</p><div class="spec-note"><span>Buyer notes</span><p>Define the format, ingredient composition, acidity, soluble solids and intended application.</p></div><a class="text-link" href="#inquiry" data-ingredient="Yuzu / Yuja">Discuss this ingredient <span aria-hidden="true">↗</span></a></div>
+    </article><article class="ingredient ingredient-ginseng" id="ginseng" aria-labelledby="ginseng-title">
+      <figure class="ingredient-photo reveal"><img src="assets/fresh-ginseng.webp" alt="Illustrated ginseng harvest, expressing the root&#x27;s connection to the soil." width="512" height="1024" loading="lazy" decoding="async"><figcaption>Illustrated ginseng harvest, expressing the root&#x27;s connection to the soil.</figcaption><span class="photo-index" aria-hidden="true">03</span></figure>
+      <div class="ingredient-text reveal"><p class="eyebrow">Burgundy · The root</p><h3 id="ginseng-title">Ginseng &amp; red ginseng</h3><p class="ingredient-deck">From living soil to a considered process.</p><p>The lifted root is our image of beginnings: earth still clinging to its surface, fine roots intact. Korean ginseng refers to Panax ginseng. Fresh ginseng is the harvested root; red ginseng is produced by steaming and drying it. Red ginseng&#x27;s darker appearance and distinctive flavor come from processing, rather than from a separate red-rooted plant.</p><p>Whole roots, slices, powders and extracts require different specifications. Ask for botanical identity, root age where documented, processing details and composition. For extracts, clarify the extraction method, concentration, carriers and any agreed analytical markers. Choose the form through application trials and documented requirements, rather than assuming that color or a photograph establishes quality.</p><div class="spec-note"><span>Buyer notes</span><p>Confirm species, form, processing, composition and the documentation required for your market.</p></div><a class="text-link" href="#inquiry" data-ingredient="Ginseng &amp; red ginseng">Discuss this ingredient <span aria-hidden="true">↗</span></a></div>
+    </article></section>
+  <section class="sourcing section-shell" id="sourcing" aria-labelledby="sourcing-title"><div class="sourcing-heading"><p class="eyebrow">Our ingredient philosophy</p><h2 id="sourcing-title">Begin with the essential.<br><em>Make the details clear.</em></h2></div><div class="sourcing-body"><p>KO&#x27;S places the ingredient before the finished product: where it comes from, how it is grown, what happens at harvest and how it reaches the next maker. Freshness is a practical question about elapsed time, processing, packaging and storage. For a dried leaf or steamed root, careful preservation may matter more than a claim of being freshly picked.</p><p>Organic cultivation is an aspiration that must be supported by evidence when a product is sold as organic. Buyers should verify a current certificate, its product scope, the certified operator and acceptance in the destination market. The landscape imagery on this page does not establish certified-organic status. Product claims belong with the relevant documents for the proposed supply.</p></div><div class="philosophy-values"><span>Origin</span><span>Cultivation</span><span>Harvest</span><span>Care</span></div></section>
+  <section class="buyer-guide section-shell" id="buyers" aria-labelledby="buyer-title"><div class="buyer-heading"><p class="eyebrow">For international buyers</p><h2 id="buyer-title">Start with a specification, then a sample.</h2><p>A clear brief helps turn an ingredient idea into a useful sourcing conversation. Agree on these details before comparing offers.</p></div><ol class="buyer-checks"><li><span class="check-number">01</span><div><h3>Identity &amp; origin</h3><p>State the ingredient, botanical species where relevant, required form and destination. Request lot origin and traceability records.</p></div></li><li><span class="check-number">02</span><div><h3>Composition &amp; performance</h3><p>Specify additions, processing, sensory targets and how the ingredient will be used. Evaluate samples in your own application.</p></div></li><li><span class="check-number">03</span><div><h3>Quality documentation</h3><p>Agree on relevant safety limits and test evidence, allergens, storage and shelf life. Confirm any certification needed for your market.</p></div></li><li><span class="check-number">04</span><div><h3>Commercial &amp; logistics details</h3><p>Request current availability, sample arrangements, order quantities, lead time, packaging and shipment terms. Confirm import requirements before ordering.</p></div></li></ol></section>
+  <section class="faq section-shell" id="faq" aria-labelledby="faq-title"><div><p class="eyebrow">A FEW USEFUL QUESTIONS</p><h2 id="faq-title">Know what<br>you are buying.</h2></div><div class="faq-items"><details><summary>Is every green tea powder matcha?</summary><p>No. Matcha involves specific cultivation and leaf preparation as well as milling. Ask how the leaves were shaded and processed, and evaluate the powder against your application requirements.</p></details><details><summary>Are yuzu and yuja the same ingredient?</summary><p>Yuja is the Korean name for yuzu. A fresh fruit and a sweetened yuja preparation have different compositions, so always check the format and full ingredient list.</p></details><details><summary>What is the difference between ginseng and red ginseng?</summary><p>Fresh ginseng is the harvested root. Red ginseng is ginseng that has been steamed and dried. Processing, format and composition should be specified separately when buying.</p></details><details><summary>Are the ingredients shown certified organic?</summary><p>This page describes an ingredient philosophy and growing landscapes. It does not certify a product. Confirm current organic documentation and its applicability to the exact product and destination market.</p></details><details><summary>What should I include in a sourcing inquiry?</summary><p>Share your target ingredient and format, intended application, destination country, estimated quantity and required documents. Availability, origin, pricing and delivery terms require a separate confirmed offer.</p></details></div></section>
+  <section class="inquiry section-shell" id="inquiry" aria-labelledby="inquiry-title"><div class="inquiry-copy"><p class="eyebrow">Begin a conversation</p><h2 id="inquiry-title">What would you like to create?</h2><p>Prepare a sourcing brief with the details below. A precise application and destination help define the questions that matter.</p><p class="inquiry-note">A sourcing brief is a starting point. Product availability and commercial terms must be confirmed separately.</p></div><form id="inquiry-form"><div class="form-grid"><div class="form-field "><label for="inquiry-name">Your name <span aria-hidden="true">*</span></label><input name="name" id="inquiry-name" type="text" autocomplete="name" maxlength="300" placeholder="Full name" required></div><div class="form-field "><label for="inquiry-company">Company <span aria-hidden="true">*</span></label><input name="company" id="inquiry-company" type="text" autocomplete="organization" maxlength="300" placeholder="Company or organization" required></div><div class="form-field "><label for="inquiry-email">Business email <span aria-hidden="true">*</span></label><input name="email" id="inquiry-email" type="email" autocomplete="email" maxlength="300" placeholder="name@company.com" required></div><div class="form-field "><label for="inquiry-destination">Destination country <span aria-hidden="true">*</span></label><input name="destination" id="inquiry-destination" type="text" autocomplete="country-name" maxlength="300" placeholder="Intended import market" required></div><div class="form-field full-field"><label for="inquiry-ingredient">Ingredient &amp; format <span aria-hidden="true">*</span></label><input name="ingredient" id="inquiry-ingredient" type="text" autocomplete="off" maxlength="300" placeholder="For example, matcha powder or unsweetened yuzu juice" required></div><div class="form-field "><label for="inquiry-quantity">Estimated quantity (optional)</label><input name="quantity" id="inquiry-quantity" type="text" autocomplete="off" maxlength="300" placeholder="Volume and planned purchasing frequency"></div><div class="form-field full-field"><label for="inquiry-application">Application &amp; requirements <span aria-hidden="true">*</span></label><textarea name="application" id="inquiry-application" rows="4" maxlength="3000" placeholder="Product use, target specifications, required documents and timing" required></textarea></div></div><button class="button button-gold" type="submit" id="inquiry-submit">Download sourcing brief <span aria-hidden="true">↗</span></button><p class="form-explanation" id="form-explanation">Your brief downloads as a text file. This form does not send or store your information.</p><p id="form-status" class="form-status" role="status" aria-live="polite"></p><noscript><p>The interactive brief needs JavaScript. Use the buyer checklist above to prepare your inquiry.</p></noscript></form></section>
+</main>
+<footer class="site-footer section-shell"><a class="logo" href="#top">KO<span>'</span>S</a><p>KO&#x27;S · Korean Original Soul. Begin with the origin.</p><nav aria-label="Footer navigation"><a href="#ingredients">Ingredients</a><a href="#faq">Buyer questions</a><a href="#inquiry">Sourcing inquiry</a></nav><p class="footer-small">© <span id="current-year">2026</span> KO'S. Korean Original Soul.</p></footer>
 </body>
 </html>
