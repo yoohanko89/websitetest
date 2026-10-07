@@ -41,13 +41,15 @@ function makeStarMaterial(size, opacity = 1, assembling = false) {
       attribute float starSize;
       varying vec3 vColor;
       uniform float pointSize;
-      ${assembling ? 'attribute vec3 scatterPosition; uniform float formation;' : ''}
+      ${assembling ? 'attribute vec3 originPosition; uniform float formation;' : ''}
       void main() {
         vColor = color;
         ${assembling ? `
-          // The galaxy assembles on the GPU: no per-frame star buffer uploads.
+          // One brand apostrophe opens into a galaxy on the GPU. The initial
+          // stars all lie inside the shared logo path; no scattered fragments.
           float assembled = smoothstep(min(starSize * 0.025, 0.12), 1.0, formation);
-          vec3 starPosition = mix(scatterPosition, position, assembled);
+          vec3 starPosition = mix(originPosition, position, assembled);
+          vColor = mix(vec3(0.775822, 0.564712, 0.104616), color, assembled);
         ` : 'vec3 starPosition = position;'}
         vec4 eye = modelViewMatrix * vec4(starPosition, 1.0);
         gl_Position = projectionMatrix * eye;
@@ -69,10 +71,57 @@ function makeStarMaterial(size, opacity = 1, assembling = false) {
   });
 }
 
+// Match the single SVG used between KO and S. The 24 × 36 viewbox is
+// centred on the group's origin, keeping the screen-space logo anchor exact.
+const BRAND_ORIGIN_HEIGHT = 230;
+function apostropheOriginSampler(random) {
+  const shape = new THREE.Shape();
+  const x = (value) => (value - 12) / 36 * BRAND_ORIGIN_HEIGHT;
+  const y = (value) => (18 - value) / 36 * BRAND_ORIGIN_HEIGHT;
+  const curve = (a, b, c, d, e, f) => shape.bezierCurveTo(x(a), y(b), x(c), y(d), x(e), y(f));
+  shape.moveTo(x(14.5), y(2));
+  curve(20.5, 1.2, 23.6, 5.6, 22.2, 11.2);
+  curve(20.7, 17.1, 14.4, 20.6, 10.6, 25.4);
+  curve(7.8, 28.9, 6, 31.9, 3, 34);
+  curve(4.1, 29.3, 5.5, 24.4, 8.1, 20.6);
+  curve(10.9, 16.5, 14.6, 16.3, 14.8, 12.7);
+  curve(15, 10.6, 12.8, 10.3, 10.9, 10.4);
+  curve(8.3, 10.5, 6.8, 8.1, 7.8, 5.7);
+  curve(8.9, 3.1, 11.4, 2.2, 14.5, 2);
+  shape.closePath();
+  const vertices = shape.getPoints(16);
+  const faces = THREE.ShapeUtils.triangulateShape(vertices, []);
+  let totalArea = 0;
+  const triangles = faces.map((face) => {
+    const [a, b, c] = face.map((index) => vertices[index]);
+    totalArea += Math.abs((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) * 0.5;
+    return { a, b, c, cumulativeArea: totalArea };
+  });
+  return () => {
+    // Area-weighted barycentric sampling fills the one continuous silhouette.
+    const target = random() * totalArea;
+    let low = 0;
+    let high = triangles.length - 1;
+    while (low < high) {
+      const middle = (low + high) >> 1;
+      if (triangles[middle].cumulativeArea < target) low = middle + 1;
+      else high = middle;
+    }
+    const { a, b, c } = triangles[low];
+    const root = Math.sqrt(random());
+    const fraction = random();
+    return [
+      a.x * (1 - root) + b.x * root * (1 - fraction) + c.x * root * fraction,
+      a.y * (1 - root) + b.y * root * (1 - fraction) + c.y * root * fraction,
+      0,
+    ];
+  };
+}
+
 function makeGalaxy(count) {
   const random = seededRandom(64112);
   const positions = new Float32Array(count * 3);
-  const scatterPositions = new Float32Array(count * 3);
+  const originPositions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
   const sizes = new Float32Array(count);
   const innerColor = new THREE.Color('#fff0c3');
@@ -90,8 +139,6 @@ function makeGalaxy(count) {
     positions[index * 3] = Math.cos(angle) * radius + gaussian * scatter;
     positions[index * 3 + 1] = Math.sin(angle) * radius + (random() - 0.5) * scatter;
     positions[index * 3 + 2] = gaussian * (1.2 + radius * 0.042);
-    // Begin as a loose field of fragments rather than an already formed spiral.
-    // Generate these last so the existing arm distribution remains unchanged.
     color.copy(innerColor).lerp(middleColor, clamp(radius / 36, 0, 1));
     color.lerp(outerColor, clamp((radius - 32) / 83, 0, 0.8));
     if (random() > 0.88) color.lerp(olive, 0.62);
@@ -99,106 +146,22 @@ function makeGalaxy(count) {
     color.toArray(colors, index * 3);
     sizes[index] = 0.26 + random() * 0.86 + (random() > 0.995 ? 2.3 : 0);
   }
-  const scatterRandom = seededRandom(43607);
+  const originPoint = apostropheOriginSampler(seededRandom(43607));
   for (let index = 0; index < count; index += 1) {
-    const angle = scatterRandom() * Math.PI * 2;
-    const radius = 25 + Math.sqrt(scatterRandom()) * 155;
-    scatterPositions[index * 3] = Math.cos(angle) * radius;
-    scatterPositions[index * 3 + 1] = Math.sin(angle) * radius * 0.76;
-    scatterPositions[index * 3 + 2] = (scatterRandom() - 0.5) * 64;
+    originPositions.set(originPoint(), index * 3);
   }
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-  geometry.setAttribute('scatterPosition', new THREE.BufferAttribute(scatterPositions, 3));
+  geometry.setAttribute('originPosition', new THREE.BufferAttribute(originPositions, 3));
   geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
   geometry.setAttribute('starSize', new THREE.BufferAttribute(sizes, 1));
-  const galaxy = new THREE.Points(geometry, makeStarMaterial(3.8, 1, true));
-  galaxy.name = 'Volumetric five-arm Milky Way';
+  const galaxy = new THREE.Points(geometry, makeStarMaterial(3.8, 0, true));
+  galaxy.name = "KO'S single apostrophe opening into the Milky Way";
   galaxy.position.set(0, 0, -240);
   galaxy.rotation.x = 0.16;
-  // Include the dispersed starting positions in the culling volume.
-  galaxy.geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 190);
+  // One immutable bound covers both the brand silhouette and the final arms.
+  galaxy.geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 140);
   return galaxy;
-}
-
-function makeApostropheGalaxy(compact) {
-  // The very same curved apostrophe as assets/apostrophe-mark.svg. Its rounded
-  // swirl head and tapered tail recall one half of the Korean taegeuk.
-  const shape = new THREE.Shape();
-  const x = (value) => (value - 12) / 36;
-  const y = (value) => (18 - value) / 36;
-  const curve = (a, b, c, d, e, f) => shape.bezierCurveTo(x(a), y(b), x(c), y(d), x(e), y(f));
-  shape.moveTo(x(14.5), y(2));
-  curve(20.5, 1.2, 23.6, 5.6, 22.2, 11.2);
-  curve(20.7, 17.1, 14.4, 20.6, 10.6, 25.4);
-  curve(7.8, 28.9, 6, 31.9, 3, 34);
-  curve(4.1, 29.3, 5.5, 24.4, 8.1, 20.6);
-  curve(10.9, 16.5, 14.6, 16.3, 14.8, 12.7);
-  curve(15, 10.6, 12.8, 10.3, 10.9, 10.4);
-  curve(8.3, 10.5, 6.8, 8.1, 7.8, 5.7);
-  curve(8.9, 3.1, 11.4, 2.2, 14.5, 2);
-  shape.closePath();
-  const geometry = new THREE.ExtrudeGeometry(shape, { depth: 0.075, bevelEnabled: false, curveSegments: 3, steps: 1 });
-  geometry.translate(0, 0, -0.0375);
-  const material = new THREE.MeshStandardMaterial({
-    color: 0xe4c65b, roughness: 0.52, metalness: 0.18,
-    emissive: 0x8d6718, emissiveIntensity: 0.32,
-    transparent: true, depthWrite: false,
-  });
-  const count = compact ? 120 : 200;
-  const fragments = new THREE.InstancedMesh(geometry, material, count);
-  fragments.name = "KO'S curved apostrophes gathering into five spiral arms";
-  fragments.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
-  // One fixed bound covers both the scattered and assembled geometry.
-  fragments.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 205);
-  const random = seededRandom(89174);
-  const records = [];
-  const gold = new THREE.Color();
-  for (let index = 0; index < count; index += 1) {
-    const radius = 15 + Math.pow((index + 0.5) / count, 0.78) * 100;
-    const arm = index % 5;
-    const targetAngle = radius * 0.052 + arm / 5 * Math.PI * 2 + (random() - 0.5) * 0.10;
-    records.push({
-      radius, targetAngle,
-      startRadius: radius + 35 + random() * 50,
-      startAngle: targetAngle - 0.6 - random() * 1.25,
-      startDepth: (random() - 0.5) * 44,
-      targetDepth: (random() - 0.5) * 7,
-      startRotation: random() * Math.PI * 2,
-      tilt: (random() - 0.5) * 0.25,
-      size: compact ? 5.5 + random() * 5.5 : 3.5 + random() * 3.6,
-      delay: random() * 0.65,
-    });
-    gold.set(index % 7 === 0 ? '#fff0ad' : index % 3 === 0 ? '#d3a444' : '#e4c65b');
-    fragments.setColorAt(index, gold);
-  }
-  const transform = new THREE.Object3D();
-  let previousTime = NaN;
-  function update(time) {
-    if (time === previousTime) return;
-    previousTime = time;
-    const formation = smooth(time / 6.6);
-    const fading = 1 - smooth((time - 7.8) / 5.2);
-    material.opacity = fading * 0.95;
-    fragments.visible = fading > 0.005;
-    if (!fragments.visible) return;
-    for (let index = 0; index < count; index += 1) {
-      const record = records[index];
-      const local = smooth((time - record.delay) / (6.6 - record.delay));
-      const radius = THREE.MathUtils.lerp(record.startRadius, record.radius, local);
-      const angle = THREE.MathUtils.lerp(record.startAngle, record.targetAngle, local);
-      transform.position.set(Math.cos(angle) * radius, Math.sin(angle) * radius,
-        THREE.MathUtils.lerp(record.startDepth, record.targetDepth, local));
-      transform.rotation.set(record.tilt * (1 - local), record.tilt * 0.7,
-        THREE.MathUtils.lerp(record.startRotation, record.targetAngle - Math.PI / 2, local));
-      transform.scale.setScalar(record.size * (1 + (1 - local) * 0.12));
-      transform.updateMatrix();
-      fragments.setMatrixAt(index, transform.matrix);
-    }
-    fragments.instanceMatrix.needsUpdate = true;
-    fragments.userData.formation = formation;
-  }
-  return { fragments, count, update };
 }
 
 function makeDistantStars(count) {
@@ -380,15 +343,20 @@ export function createCosmicWorld(options = {}) {
   const group = new THREE.Group();
   group.name = 'KOS — the universe to Korean origins';
   const galaxy = makeGalaxy(compact ? 8500 : 16000);
-  const apostrophes = makeApostropheGalaxy(compact);
   const galaxySystem = new THREE.Group();
   galaxySystem.position.copy(galaxy.position);
   galaxySystem.rotation.copy(galaxy.rotation);
   galaxy.position.set(0, 0, 0);
   galaxy.rotation.set(0, 0, 0);
-  galaxySystem.add(galaxy, apostrophes.fragments);
-  group.add(galaxySystem, makeDistantStars(compact ? 600 : 1000));
-  group.userData.brandGalaxy = { apostropheCount: apostrophes.count, formationSeconds: 6.6, oceanColor: '#176b96' };
+  galaxySystem.add(galaxy);
+  const distantStars = makeDistantStars(compact ? 600 : 1000);
+  group.add(galaxySystem, distantStars);
+  group.userData.brandGalaxy = {
+    mode: 'single-apostrophe', apostropheCount: 1,
+    formationSeconds: 6.6, formation: 0, oceanColor: '#176b96',
+    originViewBoxWidth: BRAND_ORIGIN_HEIGHT * 24 / 36,
+    originViewBoxHeight: BRAND_ORIGIN_HEIGHT,
+  };
 
   const earthSystem = new THREE.Group();
   const rotatingEarth = new THREE.Group();
@@ -481,9 +449,14 @@ export function createCosmicWorld(options = {}) {
     lastTime = Number.isFinite(time) ? time : 0;
     lastProgress = clamp(progress, 0, 1);
     galaxySystem.rotation.z = lastTime * 0.0024;
-    galaxy.material.uniforms.formation.value = smooth(lastTime / 6.6);
-    apostrophes.update(lastTime);
-    group.userData.brandGalaxy.formation = smooth(lastTime / 6.6);
+    const formation = smooth((lastTime - 4.2) / 2.4);
+    const starOpacity = smooth((lastTime - 2.4) / 1.5);
+    galaxy.material.uniforms.formation.value = formation;
+    galaxy.material.uniforms.opacity.value = starOpacity;
+    galaxy.visible = starOpacity > 0.001;
+    distantStars.material.uniforms.opacity.value = 0.7 * smooth((lastTime - 3.3) / 2);
+    distantStars.visible = lastTime > 3.3;
+    group.userData.brandGalaxy.formation = formation;
     const lock = smooth((lastProgress - 0.54) / 0.2);
     rotatingEarth.rotation.y = THREE.MathUtils.lerp(-1.12 + lastTime * 0.045, -0.647, lock);
     const orbitalPhase = lastTime * 0.035;
@@ -502,7 +475,7 @@ export function createCosmicWorld(options = {}) {
     let position;
     let target;
     if (p <= 0.63) {
-      // Watch the complete apostrophe spiral form before flying into it. Both
+      // Watch the single brand apostrophe become a galaxy before flying into it. Both
       // curves reach their original Earth entry at 16.38 seconds, so the globe
       // and Korea approach still join the existing route without a camera cut.
       const voyage = smooth((p * 26 - 7.4) / (26 * 0.63 - 7.4));
@@ -549,9 +522,6 @@ export function createCosmicWorld(options = {}) {
     if (disposed) return;
     disposed = true;
     atlasRequest.abort();
-    // InstancedMesh owns its matrix/color GPU attributes separately from the
-    // shared geometry; release those as well when the voyage is replaced.
-    apostrophes.fragments.dispose();
     const geometries = new Set();
     const materials = new Set();
     const textures = new Set();
@@ -576,5 +546,8 @@ export function createCosmicWorld(options = {}) {
   }
 
   update(0, 0);
-  return { group, getCamera, update, ready, dispose };
+  function getBrandGalaxy() {
+    return { system: galaxySystem, profile: group.userData.brandGalaxy };
+  }
+  return { group, getCamera, getBrandGalaxy, update, ready, dispose };
 }

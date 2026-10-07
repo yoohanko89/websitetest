@@ -1,18 +1,19 @@
 # KO'S — Korean Original Soul
 
 An English ingredient website with **Your Korean Odyssey**, a visitor-led
-3D journey. Golden copies of the KO'S swirling apostrophe gather into a
-five-arm galaxy over the first 6.6 seconds. The wordmark, favicon and actual
-instanced 3D forms share the same SVG outline. Stars gather with the marks,
-then the automatically playing galaxy → orbiting Earth → Korea zoom
+3D journey. The single apostrophe between KO and S in the opening wordmark
+expands from its exact on-screen position. Its solid SVG silhouette turns into
+stars inside the same outline, then opens into the spiral galaxy. Copies and
+scattered apostrophe fragments are not used. The globe's oceans stay blue.
+The automatically playing galaxy → orbiting Earth → Korea zoom
 pauses on arrival and invites the visitor to begin. The camera follows Jeju,
 the south coast, Maisan and Buseoksa before entering tea, yuzu and ginseng
 farms. Visitors choose growing regions on an illustrated atlas, fly there in
 3D and deliberately discover the leaf, fruit and root. Three discoveries
 reveal KO'S ingredient philosophy and buyer links. Burgundy, gold yellow
 and olive green connect the voyage to the brand, with blue oceans and olive
-continents on Earth. The opening adds one lightweight instance draw with
-120 mobile / 200 desktop apostrophes and no new textures.
+continents on Earth. The opening reuses the existing star buffer and one small SVG overlay; it
+adds no textures or repeated symbol meshes.
 
 The underlying camera route spans 83 seconds; visitor decisions pause the
 route at Korea (24s), tea (63.4s), yuzu (72.2s) and ginseng (82.4s).

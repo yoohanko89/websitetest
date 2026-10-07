@@ -1,7 +1,7 @@
 import * as THREE from './vendor/three.module.js';
-import { createCosmicWorld } from './cosmic-world.js?v=20261007-apostrophe';
-import { createKoreanLandscape, getKoreanLandscapeCamera } from './korean-landscapes.js?v=20261007-apostrophe';
-import { createKoreanFarms } from './korean-farms.js?v=20261007-apostrophe';
+import { createCosmicWorld } from './cosmic-world.js?v=20261007-single-origin';
+import { createKoreanLandscape, getKoreanLandscapeCamera } from './korean-landscapes.js?v=20261007-single-origin';
+import { createKoreanFarms } from './korean-farms.js?v=20261007-single-origin';
 
 // One perspective camera, one WebGL scene. A tangent coordinate frame places
 // the Korean terrain on the globe and keeps local farm details numerically small.
@@ -65,11 +65,59 @@ export async function createJourney(canvas, onChange, { onUnavailable = () => {}
   let width = 1, height = 1;
   let graphicsLost = false;
   let observer;
+  let brandOrigin;
+  const brandSource = document.querySelector('.hero-wordmark .brand-apostrophe');
+  const brandOverlay = document.querySelector('#origin-mark');
+  const brandGalaxy = cosmos.getBrandGalaxy();
+  const canonicalGalaxy = new THREE.Vector3(0, 0, -240);
+
+  function resetBrandOverlay() {
+    if (brandOverlay) brandOverlay.hidden = true;
+    if (brandSource) brandSource.style.visibility = '';
+  }
+
+  function frameBrandOrigin() {
+    if (!brandOrigin || !brandOverlay || !brandSource) return;
+    const growth = Math.pow(12, smooth((seconds - .7) / 3.1));
+    brandSource.style.visibility = seconds >= .7 ? 'hidden' : '';
+    brandOverlay.hidden = seconds < .7 || seconds >= 4.2;
+    // Render the SVG at its enlarged size so the original mark stays crisp.
+    const markWidth = brandOrigin.width * growth;
+    const markHeight = brandOrigin.height * growth;
+    brandOverlay.style.left = `${brandOrigin.x - markWidth / 2}px`;
+    brandOverlay.style.top = `${brandOrigin.y - markHeight / 2}px`;
+    brandOverlay.style.width = `${markWidth}px`;
+    brandOverlay.style.height = `${markHeight}px`;
+    brandOverlay.style.opacity = String(1 - smooth((seconds - 3.6) / .6));
+    const { system, profile } = brandGalaxy;
+    profile.origin = { ...brandOrigin, growth };
+    const canonicalRotation = new THREE.Quaternion().setFromEuler(new THREE.Euler(.16, 0, seconds * .0024));
+    if (seconds >= 10.5) {
+      system.position.copy(canonicalGalaxy); system.scale.setScalar(1); system.quaternion.copy(canonicalRotation); return;
+    }
+    camera.updateMatrixWorld(true);
+    const worldCenter = canonicalGalaxy.clone().applyMatrix4(spaceToLocal);
+    const depth = -worldCenter.clone().applyMatrix4(camera.matrixWorldInverse).z;
+    const ndcDepth = worldCenter.clone().project(camera).z;
+    const anchor = new THREE.Vector3(brandOrigin.x / width * 2 - 1, 1 - brandOrigin.y / height * 2, ndcDepth)
+      .unproject(camera).applyMatrix4(localToSpace);
+    const pixelsPerWorldUnit = height * .5 * camera.projectionMatrix.elements[5] / depth;
+    const initialScale = brandOrigin.height / (profile.originViewBoxHeight * 1000 * pixelsPerWorldUnit);
+    const opening = smooth((seconds - 4.2) / 2.4);
+    const leavingOrigin = smooth((seconds - 6.6) / 3.9);
+    system.position.copy(anchor).lerp(canonicalGalaxy, leavingOrigin);
+    system.scale.setScalar(THREE.MathUtils.lerp(initialScale * growth, 1, opening));
+    const facingViewer = rotation.clone().multiply(camera.quaternion);
+    system.quaternion.copy(facingViewer).slerp(canonicalRotation, opening);
+    const projected = system.position.clone().applyMatrix4(spaceToLocal).project(camera);
+    profile.projectedOrigin = { x: (projected.x + 1) * width / 2, y: (1 - projected.y) * height / 2 };
+  }
 
   function unavailable() {
     if (disposed || graphicsLost) return;
     graphicsLost = true; playing = false; exploring = false;
     cancelTravel(); cancelAnimationFrame(raf); raf = 0; previous = 0;
+    resetBrandOverlay();
     observer?.disconnect(); onUnavailable();
   }
   function contextLost(event) { event.preventDefault(); unavailable(); }
@@ -88,6 +136,10 @@ export async function createJourney(canvas, onChange, { onUnavailable = () => {}
     if (disposed || graphicsLost) return;
     const box = canvas.parentElement.getBoundingClientRect();
     width = Math.max(1, box.width); height = Math.max(1, box.height);
+    if (brandSource) {
+      const glyph = brandSource.getBoundingClientRect();
+      brandOrigin = { x: glyph.left + glyph.width / 2 - box.left, y: glyph.top + glyph.height / 2 - box.top, width: glyph.width, height: glyph.height };
+    }
     const ratio = Math.min(devicePixelRatio || 1, compact ? 1 : 1.25, Math.sqrt((compact ? 650000 : 1600000) / (width * height)), renderer.capabilities.maxTextureSize / Math.max(width, height));
     renderer.setPixelRatio(ratio);
     renderer.setSize(width, height, false);
@@ -151,20 +203,14 @@ export async function createJourney(canvas, onChange, { onUnavailable = () => {}
     camera.lookAt(pose.target);
     camera.near = Math.max(.025, Math.min(300, pose.position.distanceTo(pose.target) * .001));
     camera.far = seconds < 30 ? 900000 : 4000;
-    // First show the assembled brand galaxy, then fly into it. Place it beside
-    // the desktop wordmark and beneath the mobile copy without extra canvases.
-    if (seconds < 10.5) {
-      const wide = 1 - smooth((seconds - 7.4) / 3.1);
-      const narrowScreen = innerWidth < 769;
-      camera.fov = THREE.MathUtils.lerp(50, narrowScreen ? 115 : 70, wide);
-      camera.setViewOffset(width, height, narrowScreen ? 0 : -width * .16 * wide, narrowScreen ? -height * .21 * wide : 0, width, height);
     // Leave room beneath the ingredient for the visitor's discovery card.
-    } else if (innerWidth < 769 && seconds > 56) {
+    if (innerWidth < 769 && seconds > 56) {
       const rootFraming = smooth((seconds - 77) / 4);
       camera.fov = THREE.MathUtils.lerp(60, 78, rootFraming);
       camera.setViewOffset(width, height, 0, height * THREE.MathUtils.lerp(.085, .25, rootFraming), width, height);
     } else { camera.fov = 50; camera.clearViewOffset(); }
     camera.updateProjectionMatrix();
+    frameBrandOrigin();
     landmark = pose.landmark;
     renderer.render(scene, camera);
     if (forceNotice || Math.abs(seconds - lastNotice) > .12) { lastNotice = seconds; onChange(getState()); }
@@ -256,6 +302,7 @@ export async function createJourney(canvas, onChange, { onUnavailable = () => {}
       disposed = true; playing = false; exploring = false; cancelTravel();
       cancelAnimationFrame(raf); raf = 0; previous = 0;
       observer?.disconnect(); canvas.removeEventListener('webglcontextlost', contextLost);
+      resetBrandOverlay();
       cosmos.dispose(); landscape?.dispose(); farms?.dispose(); renderer.dispose(); scene.clear();
     } };
 }
