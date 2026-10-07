@@ -2,7 +2,7 @@ import * as THREE from './vendor/three.module.js';
 
 // A continuous, entirely geometric farm world. No image planes are used here.
 // Coordinates continue the Korean landscape southwards along the negative Z axis.
-export function createKoreanFarms() {
+export function createKoreanFarms({ compact = false } = {}) {
   const group = new THREE.Group();
   group.name = 'Korean farms — living ingredients';
   const resources = new Set();
@@ -71,6 +71,10 @@ export function createKoreanFarms() {
   const sphere = keep(new THREE.SphereGeometry(1, 8, 6));
   const tinySphere = keep(new THREE.IcosahedronGeometry(1, 0));
   const cylinder = keep(new THREE.CylinderGeometry(.65, 1, 1, 7));
+  // Keep the close-up ingredients intact while distant foliage uses a lighter
+  // silhouette on small screens. Hero stems and branches keep their geometry.
+  const backgroundSphere = compact ? keep(new THREE.SphereGeometry(1, 6, 3)) : sphere;
+  const backgroundCylinder = compact ? keep(new THREE.CylinderGeometry(.65, 1, 1, 5)) : cylinder;
 
   function instance(geometry, mat, count, name) {
     const object = keep(new THREE.InstancedMesh(geometry, mat, count));
@@ -91,7 +95,7 @@ export function createKoreanFarms() {
   }
 
   // Sculpted rolling earth gives the drone pass real depth and parallax.
-  const groundGeometry = keep(new THREE.PlaneGeometry(600, 1160, 70, 145));
+  const groundGeometry = keep(new THREE.PlaneGeometry(600, 1160, compact ? 24 : 70, compact ? 58 : 145));
   groundGeometry.rotateX(-Math.PI / 2);
   const vertices = groundGeometry.attributes.position;
   const groundColors = [];
@@ -114,9 +118,9 @@ export function createKoreanFarms() {
   const teaColumns = 39;
   const teaCount = teaRows * teaColumns;
   const leavesPerBush = 7;
-  const teaBushes = instance(sphere, tintedCanopy, teaCount * 2, 'Three-dimensional tea hedges');
+  const teaBushes = instance(backgroundSphere, tintedCanopy, teaCount * 2, 'Three-dimensional tea hedges');
   const teaLeaves = instance(teaLeafGeometry, tintedLeaves, teaCount * leavesPerBush, 'Fresh tea leaves');
-  const teaStems = instance(cylinder, bark, teaCount, 'Tea woody stems');
+  const teaStems = instance(backgroundCylinder, bark, teaCount, 'Tea woody stems');
   const teaDew = instance(tinySphere, dew, teaCount * 2, 'Morning dew on tea');
   let bushIndex = 0, leafIndex = 0, dewIndex = 0;
   const teaTints = ['#617b37', '#7e8b40', '#a1a953', '#526d31', '#889747'];
@@ -161,11 +165,11 @@ export function createKoreanFarms() {
 
   // Orchard trees are true branched structures with individually modelled yuzu fruit.
   const orchardTreeCount = 7 * 9;
-  const trunks = instance(cylinder, bark, orchardTreeCount, 'Yuzu orchard trunks');
-  const branches = instance(cylinder, bark, orchardTreeCount * 4, 'Yuzu orchard branches');
-  const crowns = instance(sphere, tintedCanopy, orchardTreeCount * 4, 'Yuzu leaf canopies');
+  const trunks = instance(backgroundCylinder, bark, orchardTreeCount, 'Yuzu orchard trunks');
+  const branches = instance(backgroundCylinder, bark, orchardTreeCount * 4, 'Yuzu orchard branches');
+  const crowns = instance(backgroundSphere, tintedCanopy, orchardTreeCount * 4, 'Yuzu leaf canopies');
   const orchardLeaves = instance(treeLeafGeometry, tintedLeaves, orchardTreeCount * 34, 'Yuzu orchard leaves');
-  const fruits = instance(sphere, goldenFruit, orchardTreeCount * 16, 'Golden yuzu on branches');
+  const fruits = instance(backgroundSphere, goldenFruit, orchardTreeCount * 16, 'Golden yuzu on branches');
   const fruitLeaf = instance(treeLeafGeometry, olive, orchardTreeCount * 16, 'Leaves beside yuzu fruit');
   let treeIndex = 0, branchIndex = 0, crownIndex = 0, orchardLeafIndex = 0, fruitIndex = 0;
   const treeLocations = [];
@@ -250,7 +254,7 @@ export function createKoreanFarms() {
   const bedGeometry = keep(new THREE.BoxGeometry(1, 1, 1));
   const beds = instance(bedGeometry, soil, 14, 'Raised ginseng soil beds');
   const bedPlants = instance(leafGeometry(2, .75), tintedLeaves, 14 * 44 * 5, 'Five-leaf ginseng plants');
-  const plantStems = instance(cylinder, oliveDark, 14 * 44, 'Ginseng stems');
+  const plantStems = instance(backgroundCylinder, oliveDark, 14 * 44, 'Ginseng stems');
   const ginsengBerries = instance(tinySphere, material('#843849', { roughness: .6 }), 14 * 44 * 3, 'Ginseng red berries');
   let plantIndex = 0, plantLeafIndex = 0, berryIndex = 0;
   for (let row = 0; row < 14; row++) {
@@ -269,7 +273,7 @@ export function createKoreanFarms() {
       }
     }
   }
-  const shadePosts = instance(cylinder, bark, 32, 'Ginseng shade-frame posts');
+  const shadePosts = instance(backgroundCylinder, bark, 32, 'Ginseng shade-frame posts');
   const shadeBars = instance(bedGeometry, burgundySoil, 56, 'Open ginseng shade-frame slats');
   let shadeBarIndex = 0;
   for (let n = 0; n < 16; n++) {
@@ -401,8 +405,8 @@ export function createKoreanFarms() {
     setInstance(stones, n, x, terrainHeight(x, z), z, .8 + random() * 1.4, .4 + random() * .7, 1 + random());
   }
   // A boundary line of trees keeps the orchard and tea terraces grounded.
-  const borderTrees = instance(sphere, oliveDark, 110, 'Olive farm boundary trees');
-  const borderTrunks = instance(cylinder, bark, 110, 'Farm boundary trunks');
+  const borderTrees = instance(backgroundSphere, oliveDark, 110, 'Olive farm boundary trees');
+  const borderTrunks = instance(backgroundCylinder, bark, 110, 'Farm boundary trunks');
   for (let n = 0; n < 110; n++) {
     const x = (n % 2 ? 1 : -1) * (173 + random() * 22);
     const z = -1715 - Math.floor(n / 2) * 19;
@@ -460,7 +464,65 @@ export function createKoreanFarms() {
     }
   }
 
-  // Bounding volumes are computed once; instanced farms are culled as clusters.
+  // Mobile background plants are sampled evenly across every field, rather
+  // than truncating an instance array and leaving the end of a farm empty.
+  // Short depth bands also let the renderer reject the orchard during a tea
+  // close-up: one bounding sphere around the entire farm could not do that.
+  function compactBackground(object, { unit = 1, samples = unit, step = 1, preserveLast = false } = {}) {
+    const bands = new Map();
+    const matrix = new THREE.Matrix4();
+    const unitCount = Math.floor(object.count / unit);
+    for (let plant = 0; plant < unitCount; plant++) {
+      const last = preserveLast && plant === unitCount - 1;
+      if (plant % step !== 0 && !last) continue;
+      const selected = last ? unit : samples;
+      for (let sample = 0; sample < selected; sample++) {
+        const index = plant * unit + Math.floor(sample * unit / selected);
+        object.getMatrixAt(index, matrix);
+        const band = Math.floor(matrix.elements[14] / 90);
+        if (!bands.has(band)) bands.set(band, []);
+        bands.get(band).push(index);
+      }
+    }
+    for (const [band, indices] of bands) {
+      const cluster = keep(new THREE.InstancedMesh(object.geometry, object.material, indices.length));
+      cluster.name = `${object.name} · depth band ${band}`;
+      cluster.castShadow = object.castShadow;
+      cluster.receiveShadow = object.receiveShadow;
+      for (let i = 0; i < indices.length; i++) {
+        object.getMatrixAt(indices[i], matrix);
+        cluster.setMatrixAt(i, matrix);
+        if (object.instanceColor) {
+          object.getColorAt(indices[i], color);
+          cluster.setColorAt(i, color);
+        }
+      }
+      group.add(cluster);
+    }
+    group.remove(object);
+    resources.delete(object);
+    object.dispose();
+  }
+  if (compact) {
+    compactBackground(teaBushes, { unit: 2, step: 2 });
+    compactBackground(teaLeaves, { unit: leavesPerBush, samples: 2 });
+    compactBackground(teaStems, { step: 2 });
+    compactBackground(teaDew, { unit: 2, samples: 1, step: 2 });
+    compactBackground(trunks);
+    compactBackground(branches, { unit: 4 });
+    compactBackground(crowns, { unit: 4 });
+    compactBackground(orchardLeaves, { unit: 34, samples: 12, preserveLast: true });
+    compactBackground(fruits, { unit: 16, samples: 8, preserveLast: true });
+    compactBackground(fruitLeaf, { unit: 16, samples: 8, preserveLast: true });
+    compactBackground(bedPlants, { unit: 5, step: 2 });
+    compactBackground(plantStems, { step: 2 });
+    compactBackground(ginsengBerries, { unit: 3, samples: 1, step: 2 });
+    compactBackground(stones, { step: 2 });
+    compactBackground(borderTrees, { unit: 2, step: 2 });
+    compactBackground(borderTrunks, { unit: 2, step: 2 });
+  }
+
+  // Static bounds and buffers are uploaded once, after background sampling.
   group.traverse((object) => {
     if (object.isInstancedMesh) {
       object.instanceMatrix.needsUpdate = true;

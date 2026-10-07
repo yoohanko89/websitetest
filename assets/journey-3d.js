@@ -1,28 +1,28 @@
 import * as THREE from './vendor/three.module.js';
-import { createCosmicWorld } from './cosmic-world.js';
-import { createKoreanLandscape } from './korean-landscapes.js';
-import { createKoreanFarms } from './korean-farms.js';
+import { createCosmicWorld } from './cosmic-world.js?v=20261007-stable';
+import { createKoreanLandscape, getKoreanLandscapeCamera } from './korean-landscapes.js?v=20261007-stable';
+import { createKoreanFarms } from './korean-farms.js?v=20261007-stable';
 
 // One perspective camera, one WebGL scene. A tangent coordinate frame places
 // the Korean terrain on the globe and keeps local farm details numerically small.
-export async function createJourney(canvas, onChange) {
+export async function createJourney(canvas, onChange, { onUnavailable = () => {} } = {}) {
   const duration = 83;
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, innerWidth < 769 ? 1.2 : 1.5));
+  const compact = innerWidth < 769 || matchMedia('(pointer: coarse)').matches || (navigator.deviceMemory > 0 && navigator.deviceMemory <= 4);
+  // Bound the drawing surface and avoid multisample buffers on portable GPUs.
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: false, powerPreference: 'low-power' });
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.08;
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(50, 1, .05, 900000);
-  const cosmos = createCosmicWorld({ worldData: globalThis.__KOS_WORLD_DATA });
-  const landscape = createKoreanLandscape();
-  const farms = createKoreanFarms();
-  await cosmos.ready;
+  const cosmos = createCosmicWorld({ worldData: globalThis.__KOS_WORLD_DATA, compact, textureWidth: Math.min(compact ? 1024 : 2048, renderer.capabilities.maxTextureSize) });
+  let landscape = null;
+  let farms = null;
   cosmos.update(26, 1);
   const endpoint = cosmos.getCamera(1);
   const normal = endpoint.position.clone().sub(endpoint.target).normalize();
   const rotation = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), normal);
-  const landStart = landscape.getCamera(0);
+  const landStart = getKoreanLandscapeCamera(0);
   const seaAnchor = landStart.target.clone(); seaAnchor.y = 0;
   const translation = endpoint.target.clone().sub(seaAnchor.multiplyScalar(.001).applyQuaternion(rotation));
   const localToSpace = new THREE.Matrix4().compose(translation, rotation, new THREE.Vector3(.001, .001, .001));
@@ -34,7 +34,7 @@ export async function createJourney(canvas, onChange) {
     if (object.material?.uniforms?.pointSize) object.material.uniforms.pointSize.value *= 1000;
     if (object.isPointLight) { object.distance *= 1000; object.intensity *= 1000 ** object.decay; }
   });
-  scene.add(cosmos.group, landscape.group, farms.group);
+  scene.add(cosmos.group);
   const localLight = new THREE.Group();
   localLight.add(new THREE.HemisphereLight('#fff0c9', '#36402b', 1.5));
   const sun = new THREE.DirectionalLight('#ffe0a0', 1.65);
@@ -63,17 +63,43 @@ export async function createJourney(canvas, onChange) {
   let ambientSeconds = 0;
   let discovery = null;
   let width = 1, height = 1;
+  let graphicsLost = false;
+  let observer;
+
+  function unavailable() {
+    if (disposed || graphicsLost) return;
+    graphicsLost = true; playing = false; exploring = false;
+    cancelTravel(); cancelAnimationFrame(raf); raf = 0; previous = 0;
+    observer?.disconnect(); onUnavailable();
+  }
+  function contextLost(event) { event.preventDefault(); unavailable(); }
+  canvas.addEventListener('webglcontextlost', contextLost);
+
+  function prepareScenery() {
+    if (seconds > 25 && !landscape) {
+      landscape = createKoreanLandscape({ compact }); scene.add(landscape.group);
+    }
+    if (seconds > 51 && !farms) {
+      farms = createKoreanFarms({ compact }); scene.add(farms.group); farms.setDiscovery(discovery);
+    }
+  }
 
   function resize() {
+    if (disposed || graphicsLost) return;
     const box = canvas.parentElement.getBoundingClientRect();
     width = Math.max(1, box.width); height = Math.max(1, box.height);
-    renderer.setSize(Math.max(1, box.width), Math.max(1, box.height), false);
+    const ratio = Math.min(devicePixelRatio || 1, compact ? 1 : 1.25, Math.sqrt((compact ? 650000 : 1600000) / (width * height)), renderer.capabilities.maxTextureSize / Math.max(width, height));
+    renderer.setPixelRatio(ratio);
+    renderer.setSize(width, height, false);
     camera.aspect = Math.max(1, box.width) / Math.max(1, box.height);
     camera.updateProjectionMatrix();
     render(true);
   }
 
   function render(forceNotice = false) {
+    if (disposed || graphicsLost) return;
+    try {
+    prepareScenery();
     let pose;
     let up = cosmicUp;
     if (seconds <= 26) {
@@ -92,22 +118,20 @@ export async function createJourney(canvas, onChange) {
     } else if (seconds < 56) {
       const p = (seconds - 29) / 27;
       pose = landscape.getCamera(p);
-      landscape.update(seconds, p);
       up = localUp;
       phase = 'landscape';
     } else {
       const p = (seconds - 56) / 27;
       pose = farms.getCamera(p);
-      farms.update(seconds, p);
       up = localUp;
       phase = 'farms';
     }
-    landscape.update(seconds + ambientSeconds, THREE.MathUtils.clamp((seconds - 29) / 27, 0, 1));
-    farms.update(seconds + ambientSeconds, THREE.MathUtils.clamp((seconds - 56) / 27, 0, 1));
+    if (seconds > 27.15) landscape?.update(seconds + ambientSeconds, THREE.MathUtils.clamp((seconds - 29) / 27, 0, 1));
+    if (seconds > 51) farms?.update(seconds + ambientSeconds, THREE.MathUtils.clamp((seconds - 56) / 27, 0, 1));
     // Reveal the tangent terrain only after the camera has entered the
     // atmosphere. Dense dawn mist conceals the rectangular modelling boundary.
-    landscape.group.visible = seconds > 27.15;
-    farms.group.visible = seconds > 51;
+    if (landscape) landscape.group.visible = seconds > 27.15;
+    if (farms) farms.group.visible = seconds > 51;
     cosmos.group.visible = seconds < 27.15;
     localLight.visible = seconds > 22;
     const atmosphere = smooth((seconds - 25.5) / 4);
@@ -137,17 +161,22 @@ export async function createJourney(canvas, onChange) {
     landmark = pose.landmark;
     renderer.render(scene, camera);
     if (forceNotice || Math.abs(seconds - lastNotice) > .12) { lastNotice = seconds; onChange(getState()); }
+    } catch (error) { console.warn('The journey paused after a graphics error.', error); unavailable(); }
   }
 
   function getState() {
-    return { ready: true, duration, seconds, progress: seconds / duration, playing, visible, phase, landmark,
+    return { ready: !graphicsLost && !disposed, duration, seconds, progress: seconds / duration, playing, visible, phase, landmark,
+      compact, graphicsLost, disposed, scenery: { landscape: Boolean(landscape), farms: Boolean(farms) },
+      pixelRatio: renderer.getPixelRatio(), drawingBuffer: [canvas.width, canvas.height],
       travelling: Boolean(travel), exploring, discovery,
       camera: camera.position.toArray(), triangles: renderer.info.render.triangles,
       points: renderer.info.render.points, drawCalls: renderer.info.render.calls, webgl: renderer.capabilities.isWebGL2 };
   }
   function tick(now) {
     raf = 0;
-    if (disposed || (!playing && !travel && !exploring) || !visible) { previous = 0; return; }
+    if (disposed || graphicsLost || (!playing && !travel && !exploring) || !visible) { previous = 0; return; }
+    const frameInterval = 1000 / (exploring && !playing && !travel ? 15 : compact ? 30 : 45);
+    if (previous && now - previous < frameInterval) { raf = requestAnimationFrame(tick); return; }
     const delta = previous ? Math.min((now - previous) / 1000, .15) : 0;
     let arrived = null;
     if (travel) {
@@ -165,6 +194,7 @@ export async function createJourney(canvas, onChange) {
   }
   function cancelTravel() { if (travel) { const cancelled = travel; travel = null; cancelled.resolve(false); } }
   function play() {
+    if (disposed || graphicsLost) return;
     cancelTravel();
     if (seconds >= duration) seconds = 0;
     playing = true; previous = 0;
@@ -172,17 +202,20 @@ export async function createJourney(canvas, onChange) {
     onChange(getState());
   }
   function pause() {
+    if (disposed || graphicsLost) return;
     cancelTravel();
     playing = false; previous = 0;
     if (!exploring) { cancelAnimationFrame(raf); raf = 0; }
     onChange(getState());
   }
   function seek(value) {
+    if (disposed || graphicsLost) return;
     cancelTravel();
     seconds = THREE.MathUtils.clamp(Number(value) || 0, 0, duration);
     previous = 0; render(true);
   }
   function flyTo(value, flightDuration = 6) {
+    if (disposed || graphicsLost) return Promise.resolve(false);
     cancelTravel(); playing = false; previous = 0;
     const target = THREE.MathUtils.clamp(Number(value) || 0, 0, duration);
     if (flightDuration <= 0 || Math.abs(target - seconds) < .01) { seek(target); return Promise.resolve(true); }
@@ -193,19 +226,28 @@ export async function createJourney(canvas, onChange) {
     });
   }
   function setExploration(active) {
+    if (disposed || graphicsLost) return;
     exploring = Boolean(active); previous = 0;
     if (exploring && visible && !raf) raf = requestAnimationFrame(tick);
     if (!exploring && !playing && !travel) { cancelAnimationFrame(raf); raf = 0; }
   }
-  function setDiscovery(id) { discovery = id || null; farms.setDiscovery(discovery); render(true); }
+  function setDiscovery(id) { discovery = id || null; farms?.setDiscovery(discovery); render(true); }
   function setVisible(value) {
+    if (disposed || graphicsLost) return;
     visible = value; previous = 0;
     if (visible && (playing || travel || exploring) && !raf) raf = requestAnimationFrame(tick);
     if (!visible) { cancelAnimationFrame(raf); raf = 0; }
     onChange(getState());
   }
+  await cosmos.ready;
   resize();
-  const observer = new ResizeObserver(resize); observer.observe(canvas.parentElement);
+  if (!graphicsLost) { observer = new ResizeObserver(resize); observer.observe(canvas.parentElement); }
   return { play, pause, seek, flyTo, setExploration, setDiscovery, getState, setVisible,
-    dispose() { disposed = true; pause(); observer.disconnect(); cosmos.dispose(); landscape.dispose(); farms.dispose(); renderer.dispose(); } };
+    dispose() {
+      if (disposed) return;
+      disposed = true; playing = false; exploring = false; cancelTravel();
+      cancelAnimationFrame(raf); raf = 0; previous = 0;
+      observer?.disconnect(); canvas.removeEventListener('webglcontextlost', contextLost);
+      cosmos.dispose(); landscape?.dispose(); farms?.dispose(); renderer.dispose(); scene.clear();
+    } };
 }

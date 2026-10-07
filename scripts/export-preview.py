@@ -101,7 +101,7 @@ def main():
             return tag
         if re.search(r"\brel\s*=\s*([\"'])stylesheet\1", tag, re.IGNORECASE):
             href = ATTRIBUTE.search(tag)
-            if not href or href.group(3) != "styles.css":
+            if not href or urlsplit(href.group(3)).path != "styles.css":
                 raise ValueError("Expected the site stylesheet to be styles.css.")
             return f"<style>{styles}</style>"
 
@@ -114,7 +114,7 @@ def main():
 
     source = TAG.sub(rewrite_tag, source)
     scripts = SCRIPT.findall(source)
-    if len(scripts) != 1 or scripts[0][1] != "app.js":
+    if len(scripts) != 1 or urlsplit(scripts[0][1]).path != "app.js":
         raise ValueError("Expected one external application script: app.js.")
     source = SCRIPT.sub("", source)
 

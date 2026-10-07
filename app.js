@@ -1,5 +1,5 @@
-import { createJourney } from './assets/journey-3d.js';
-import { createOdyssey } from './assets/odyssey.js';
+import { createJourney } from './assets/journey-3d.js?v=20261007-stable';
+import { createOdyssey } from './assets/odyssey.js?v=20261007-stable';
 const root = document.documentElement;
 root.classList.add('js');
 const journey = document.querySelector('#cosmic-journey');
@@ -36,6 +36,19 @@ const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const odyssey = createOdyssey({ reducedMotion });
 globalThis.__KOS_ODYSSEY = odyssey;
 let film;
+let journeyVisibility;
+let visibilityChanged;
+function showJourneyFallback() {
+  film?.dispose(); film = null;
+  journeyVisibility?.disconnect();
+  if (visibilityChanged) document.removeEventListener('visibilitychange', visibilityChanged);
+  odyssey.setUnavailable(); root.classList.remove('film-ready');
+  document.querySelector('.film-controls').hidden = true;
+  document.querySelector('.film-caption').hidden = true;
+  const intro = document.querySelector('.copy-galaxy'); intro.style.opacity = '1'; intro.inert = false;
+  status.textContent = 'Explore Korea’s ingredients below. The animated journey is unavailable in this browser.';
+  status.hidden = false;
+}
 function filmChanged(state) {
   play.textContent = state.playing || state.travelling ? 'Pause voyage' : 'Continue voyage';
   play.setAttribute('aria-label', state.playing || state.travelling ? 'Pause the voyage' : 'Continue the voyage');
@@ -55,7 +68,8 @@ function filmChanged(state) {
   document.querySelector('#film-waypoint-story').textContent = state.phase === 'landscape' ? support : '';
   odyssey.update(state);
 }
-createJourney(document.querySelector('#journey-canvas'), filmChanged).then(player => {
+createJourney(document.querySelector('#journey-canvas'), filmChanged, { onUnavailable: showJourneyFallback }).then(player => {
+  if (!player.getState().ready) { player.dispose(); showJourneyFallback(); return; }
   film = player;
   odyssey.attach(player);
   globalThis.__KOS_JOURNEY = player;
@@ -64,14 +78,16 @@ createJourney(document.querySelector('#journey-canvas'), filmChanged).then(playe
   status.hidden = true;
   if (!reducedMotion.matches) player.play();
   else { status.textContent = 'Motion is paused. Select Continue voyage to begin, or choose a farm below.'; status.hidden = false; }
-  const visibility = new IntersectionObserver(entries => player.setVisible(entries[0].isIntersecting && !document.hidden), { threshold: .05 });
-  visibility.observe(journey);
-  document.addEventListener('visibilitychange', () => player.setVisible(!document.hidden && journey.getBoundingClientRect().bottom > 0 && journey.getBoundingClientRect().top < innerHeight));
+  journeyVisibility = new IntersectionObserver(entries => player.setVisible(entries[0].isIntersecting && !document.hidden), { threshold: .05 });
+  journeyVisibility.observe(journey);
+  visibilityChanged = () => player.setVisible(!document.hidden && journey.getBoundingClientRect().bottom > 0 && journey.getBoundingClientRect().top < innerHeight);
+  document.addEventListener('visibilitychange', visibilityChanged);
   reducedMotion.addEventListener('change', () => { if (reducedMotion.matches) player.pause(); });
 }).catch(error => {
-  status.textContent = 'The 3D journey needs a browser with WebGL support. You can explore the ingredients below.';
-  console.error('3D journey could not start:', error);
+  showJourneyFallback(); console.warn('3D journey could not start:', error);
 });
+addEventListener('pagehide', () => film?.setVisible(false));
+addEventListener('pageshow', () => visibilityChanged?.());
 play.addEventListener('click', () => { status.hidden = true; odyssey.togglePlayback(); });
 document.querySelector('#film-replay').addEventListener('click', () => { status.hidden = true; odyssey.restart(); });
 seek.addEventListener('input', () => odyssey.scrub(seek.value));

@@ -209,6 +209,8 @@ export function createOdyssey({ reducedMotion }) {
   document.addEventListener('keydown', event => { if (event.key === 'Escape' && !atlas.hidden) closeAtlas(true); });
   reducedMotion.addEventListener('change', () => { if (reducedMotion.matches) { ++transition; player?.setExploration(false); player?.pause(); if (mode === 'flying') { mode = 'overview'; render(); } } });
   render();
-  return { attach(value) { player = value; }, update, begin, visit, discover, finish, restart, scrub, togglePlayback, skipToArrival,
+  return { attach(value) { player = value; },
+    setUnavailable() { ++transition; player = null; mode = 'intro'; activeStop = null; arrivalStarted = false; closeAtlas(); render(); },
+    update, begin, visit, discover, finish, restart, scrub, togglePlayback, skipToArrival,
     getState() { return { mode, arrivalStarted, activeStop, visited: [...visited], choices: [...choices], completed: mode === 'complete', playerSeconds: lastPlayerState?.seconds ?? 0 }; } };
 }

@@ -17,6 +17,17 @@ while a visitor reads a farm story. Reduced motion starts paused and makes
 explicit destination choices immediate. Discovery marks last only for the
 current page visit; Restart clears them.
 
+The scene uses a compact profile on small screens, touch devices and devices
+reporting at most 4 GB of memory. Mobile Earth textures are 1024×512, desktop
+textures 2048×1024; the temporary texture is only 128×64. Landscape and farm
+meshes are created when the camera reaches them. Mobile farm backgrounds use
+fewer instances and depth bands while the close-up leaf, fruit and root remain
+fully modelled. Rendering avoids multisample buffers and bounds the drawing
+surface to 650,000 mobile or 1,600,000 desktop pixels. Camera playback is capped
+at 30 mobile / 45 desktop frames per second, and paused farm ambience at 15.
+If WebGL is lost or a scene fails, motion stops and the poster, ingredient
+navigation and sourcing form remain available. No automatic reload is used.
+
 ## Public site
 
 GitHub Pages serves https://yoohanko89.github.io/websitetest/ from the `main`
@@ -51,6 +62,14 @@ and a complete sourcing-brief download. The journey hooks are
 `window.__KOS_JOURNEY` (camera/playback) and `window.__KOS_ODYSSEY` (visitor
 state); their `getState()` methods support browser verification. The page's ingredient copy is available in
 HTML without JavaScript.
+
+For stability checks, inspect the journey's `compact`, `drawingBuffer` and
+`scenery` fields. At initial galaxy readiness, both scenery flags should be
+false. Confirm that an actual `WEBGL_lose_context` event stops GPU work and
+reveals the static hero without breaking navigation or brief downloads. Check
+touch devices at DPR 3 as well as ordinary desktop screens; a mobile viewport
+in a desktop browser does not establish behavior on every physical phone.
+Versioned local module/style URLs make the stability update bypass older caches.
 
 ## Artwork and inquiries
 

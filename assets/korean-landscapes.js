@@ -46,7 +46,36 @@ function randomSource() {
   return () => { seed=(Math.imul(1664525,seed)+1013904223)>>>0; return seed/4294967296; };
 }
 
-export function createKoreanLandscape() {
+// Camera data is inexpensive and can be used for the Earth-to-Korea connection
+// before allocating any of the terrain or its GPU resources.
+const cameraPoints=[
+  [-170,147,88],[-170,135,-107],[-115,123,-233],[94,119,-323],
+  [94,125,-426],[-90,138,-510],[-150,132,-650],[-155,145,-819],
+  [-155,155,-952],[84,133,-1110],[127,98,-1260],[-61,97,-1357],
+  [0,86,-1480],[42,82,-1604],[0,78,-1700]
+].map(p=>v3(...p));
+const targetPoints=[
+  [20,40,-200],[25,72,-196],[25,68,-196],[0,34,-311],
+  [20,3,-585],[0,4,-625],[0,25,-782],[-15,75,-1028],
+  [0,94,-1030],[44,38,-1204],[62,60,-1435],[62,75,-1438],
+  [62,heightAt(62,-1435)+26,-1435],[0,30,-1700],[0,22,-1790]
+].map(p=>v3(...p));
+const cameraCurve=new THREE.CatmullRomCurve3(cameraPoints,false,'catmullrom',.34);
+const targetCurve=new THREE.CatmullRomCurve3(targetPoints,false,'catmullrom',.3);
+const landmarks=[
+  {id:'jeju',name:'Jeju Island · Hallasan',start:0,end:3/14},
+  {id:'south-coast',name:'The South Coast · Islands & Sea',start:3/14,end:6/14},
+  {id:'maisan',name:'Jeolla Highlands · Maisan',start:6/14,end:9/14},
+  {id:'buseoksa',name:'Gyeongsang · Buseoksa',start:9/14,end:12/14},
+  {id:'farms',name:'From Korean Land to Living Ingredients',start:12/14,end:1}
+];
+export function getKoreanLandscapeCamera(progress) {
+  const p=clamp(progress);
+  const landmark=landmarks.find(item=>p<=item.end)||landmarks[landmarks.length-1];
+  return {position:cameraCurve.getPoint(p),target:targetCurve.getPoint(p),landmark:landmark.name,id:landmark.id};
+}
+
+export function createKoreanLandscape({ compact = false } = {}) {
   const group = new THREE.Group();
   group.name = 'Korean origin landscape — procedural 3D interpretation';
   const geometries = new Set();
@@ -73,7 +102,7 @@ export function createKoreanLandscape() {
   const terrainMaterial = material('#ffffff', {vertexColors:true});
 
   // One continuous triangulated landscape supports real depth/parallax.
-  const terrain = keepGeometry(new THREE.PlaneGeometry(960,1930,58,176));
+  const terrain = keepGeometry(new THREE.PlaneGeometry(960,1930,compact?38:58,compact?100:176));
   terrain.rotateX(-Math.PI/2); terrain.translate(0,0,-805);
   const position=terrain.attributes.position;
   const colors=new Float32Array(position.count*3);
@@ -102,15 +131,16 @@ export function createKoreanLandscape() {
     shader.vertexShader=shader.vertexShader.replace('#include <beginnormal_vertex>',
       '#include <beginnormal_vertex>\nobjectNormal = normalize(vec3(-.0222*cos(position.x*.037+landscapeTime*.7)*cos(position.y*.032-landscapeTime*.5), .0192*sin(position.x*.037+landscapeTime*.7)*sin(position.y*.032-landscapeTime*.5), 1.0));');
   };
-  const ocean=mesh(new THREE.PlaneGeometry(1800,2420,22,34),waterMaterial);
+  const ocean=mesh(new THREE.PlaneGeometry(1800,2420,compact?14:22,compact?22:34),waterMaterial);
   ocean.rotation.x=-Math.PI/2; ocean.position.set(0,-.7,-780); ocean.name='Olive teal sea';
 
   const foamMaterial=new THREE.LineBasicMaterial({color:COLORS.foam,transparent:true,opacity:.24});
   materials.add(foamMaterial);
   function shoreline(cx,cz,rx,rz) {
     const pts=[];
-    for(let i=0;i<=80;i++) {
-      const a=i/80*Math.PI*2;
+    const segments=compact?48:80;
+    for(let i=0;i<=segments;i++) {
+      const a=i/segments*Math.PI*2;
       const jitter=1+.022*Math.sin(a*7)+.014*Math.cos(a*11);
       pts.push(v3(cx+Math.cos(a)*rx*jitter,.25,cz+Math.sin(a)*rz*jitter));
     }
@@ -124,7 +154,7 @@ export function createKoreanLandscape() {
   const hallasan=new THREE.Group(); hallasan.name='Jeju / Hallasan volcanic crater';
   hallasan.position.set(25,27,-196); group.add(hallasan);
   const craterProfile=[[83,0],[71,8],[55,25],[41,42],[29,57],[22,65],[17,64],[12,58],[0,57]];
-  const volcanoGeo=new THREE.LatheGeometry(craterProfile.map(p=>new THREE.Vector2(...p)),48);
+  const volcanoGeo=new THREE.LatheGeometry(craterProfile.map(p=>new THREE.Vector2(...p)),compact?32:48);
   const volcanoColors=new Float32Array(volcanoGeo.attributes.position.count*3);
   const volcanoColor=new THREE.Color();
   for(let i=0;i<volcanoGeo.attributes.position.count;i++){
@@ -134,10 +164,10 @@ export function createKoreanLandscape() {
   }
   volcanoGeo.setAttribute('color',new THREE.BufferAttribute(volcanoColors,3));
   const cone=mesh(volcanoGeo,terrainMaterial,hallasan); cone.castShadow=true;
-  const lake=mesh(new THREE.CircleGeometry(11.5,32),material('#607565',{roughness:.25}),hallasan);
+  const lake=mesh(new THREE.CircleGeometry(11.5,compact?24:32),material('#607565',{roughness:.25}),hallasan);
   lake.rotation.x=-Math.PI/2; lake.position.y=85.2-27;
   // The crater rim catches the brand's warm gold light without a flat image.
-  const rim=mesh(new THREE.TorusGeometry(20,1.05,5,48),material('#a6a26b'),hallasan);
+  const rim=mesh(new THREE.TorusGeometry(20,1.05,5,compact?32:48),material('#a6a26b'),hallasan);
   rim.rotation.x=Math.PI/2; rim.position.y=64.3;
 
   // Maisan's distinctive pair of steep, rounded rock pinnacles.
@@ -145,7 +175,7 @@ export function createKoreanLandscape() {
   group.add(maisan);
   const rockMaterial=material('#ffffff',{vertexColors:true});
   function rockPeak(x,z,width,height,lean) {
-    const geometry=new THREE.SphereGeometry(1,18,15);
+    const geometry=new THREE.SphereGeometry(1,compact?14:18,compact?11:15);
     const p=geometry.attributes.position;
     const rockColors=new Float32Array(p.count*3), rockColor=new THREE.Color();
     for(let i=0;i<p.count;i++) {
@@ -178,7 +208,7 @@ export function createKoreanLandscape() {
 
   // Forest canopy is real instanced geometry, with gaps in the flight corridor.
   const random=randomSource(), treePoints=[];
-  for(let trial=0;trial<2400 && treePoints.length<240;trial++) {
+  for(let trial=0;trial<2400 && treePoints.length<(compact?140:240);trial++) {
     const x=(random()-.5)*690, z=80-random()*1780, y=heightAt(x,z);
     if(y<5 || (z>-340 && y>47)) continue;
     if(z<-1350 && z>-1540 && Math.abs(x-62)<75) continue;
@@ -236,7 +266,7 @@ export function createKoreanLandscape() {
   box(64,1.4,1.6,0,36.2,9,wood);
 
   function curvedRoof(w,d,base,parent=temple) {
-    const geo=new THREE.PlaneGeometry(w*2,d*2,24,14); geo.rotateX(-Math.PI/2);
+    const geo=new THREE.PlaneGeometry(w*2,d*2,compact?18:24,compact?10:14); geo.rotateX(-Math.PI/2);
     const pp=geo.attributes.position;
     for(let i=0;i<pp.count;i++) {
       const x=pp.getX(i), z=pp.getZ(i), zn=Math.abs(z/d), xn=Math.abs(x/w);
@@ -275,47 +305,22 @@ export function createKoreanLandscape() {
   // Warm, restrained markers are solid geometry, rather than map pin sprites.
   function path(points) {
     const curve=new THREE.CatmullRomCurve3(points.map(([x,z])=>v3(x,heightAt(x,z)+.35,z)));
-    mesh(new THREE.TubeGeometry(curve,60,1.4,4,false),material('#a58e58'));
+    mesh(new THREE.TubeGeometry(curve,compact?40:60,1.4,4,false),material('#a58e58'));
   }
   path([[-113,-791],[-89,-871],[-85,-933],[-78,-986]]);
   path([[47,-1340],[56,-1358],[67,-1372],[65,-1397]]);
 
-  // Curve points are intentionally shared between routes. Heading, position and
-  // ground clearance remain continuous as the camera moves into the farm module.
-  const cameraPoints=[
-    [-170,147,88],[-170,135,-107],[-115,123,-233],[94,119,-323],
-    [94,125,-426],[-90,138,-510],[-150,132,-650],[-155,145,-819],
-    [-155,155,-952],[84,133,-1110],[127,98,-1260],[-61,97,-1357],
-    [0,86,-1480],[42,82,-1604],[0,78,-1700]
-  ].map(p=>v3(...p));
-  const targetPoints=[
-    [20,40,-200],[25,72,-196],[25,68,-196],[0,34,-311],
-    [20,3,-585],[0,4,-625],[0,25,-782],[-15,75,-1028],
-    [0,94,-1030],[44,38,-1204],[62,60,-1435],[62,75,-1438],
-    [62,templeGround+26,-1435],[0,30,-1700],[0,22,-1790]
-  ].map(p=>v3(...p));
-  const cameraCurve=new THREE.CatmullRomCurve3(cameraPoints,false,'catmullrom',.34);
-  const targetCurve=new THREE.CatmullRomCurve3(targetPoints,false,'catmullrom',.3);
-  const landmarks=[
-    {id:'jeju',name:'Jeju Island · Hallasan',start:0,end:3/14},
-    {id:'south-coast',name:'The South Coast · Islands & Sea',start:3/14,end:6/14},
-    {id:'maisan',name:'Jeolla Highlands · Maisan',start:6/14,end:9/14},
-    {id:'buseoksa',name:'Gyeongsang · Buseoksa',start:9/14,end:12/14},
-    {id:'farms',name:'From Korean Land to Living Ingredients',start:12/14,end:1}
-  ];
+  // Route splines keep their exact heading and clearance across both profiles.
   const routes=landmarks.map(item=>({...item,
     from:cameraCurve.getPoint(item.start),to:cameraCurve.getPoint(item.end),
     lookFrom:targetCurve.getPoint(item.start),lookTo:targetCurve.getPoint(item.end)
   }));
-  const cameraPosition=new THREE.Vector3(),cameraTarget=new THREE.Vector3();
-  function getCamera(progress) {
-    const p=clamp(progress);
-    cameraCurve.getPoint(p,cameraPosition); targetCurve.getPoint(p,cameraTarget);
-    const landmark=landmarks.find(item=>p<=item.end)||landmarks[landmarks.length-1];
-    return {position:cameraPosition.clone(),target:cameraTarget.clone(),landmark:landmark.name,id:landmark.id};
-  }
+  const getCamera=getKoreanLandscapeCamera;
   function update(time,progress=0) { waterUniform.value=time; group.userData.progress=clamp(progress); }
   function dispose() {
+    // Instance matrices have their own GPU buffers, separate from the shared
+    // tree/stair geometry. Release them when a scene is rebuilt or retired.
+    group.traverse(object=>{ if(object.isInstancedMesh) object.dispose(); });
     for(const geometry of geometries) geometry.dispose();
     for(const mat of materials) mat.dispose();
     group.clear();

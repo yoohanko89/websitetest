@@ -63,9 +63,8 @@ function makeStarMaterial(size, opacity = 1) {
   });
 }
 
-function makeGalaxy() {
+function makeGalaxy(count) {
   const random = seededRandom(64112);
-  const count = 28500;
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
   const sizes = new Float32Array(count);
@@ -102,9 +101,8 @@ function makeGalaxy() {
   return galaxy;
 }
 
-function makeDistantStars() {
+function makeDistantStars(count) {
   const random = seededRandom(73115);
-  const count = 1700;
   const positions = new Float32Array(count * 3);
   const colors = new Float32Array(count * 3);
   const sizes = new Float32Array(count);
@@ -184,10 +182,10 @@ function tracePolygons(context, polygons, width, height) {
   }
 }
 
-function makeEarthTexture(topology) {
+function makeEarthTexture(topology, width, compact) {
   const canvas = document.createElement('canvas');
-  canvas.width = 4096;
-  canvas.height = 2048;
+  canvas.width = width;
+  canvas.height = width / 2;
   const context = canvas.getContext('2d');
   const gradient = context.createLinearGradient(0, 0, 0, canvas.height);
   gradient.addColorStop(0, '#24161f');
@@ -197,7 +195,8 @@ function makeEarthTexture(topology) {
   context.fillStyle = gradient;
   context.fillRect(0, 0, canvas.width, canvas.height);
   const random = seededRandom(2521);
-  for (let index = 0; index < 15000; index += 1) {
+  const detailScale = width / 4096;
+  for (let index = 0; index < Math.max(32, 15000 * detailScale * detailScale); index += 1) {
     context.fillStyle = random() > 0.5 ? 'rgba(201,155,94,0.035)' : 'rgba(5,5,10,0.05)';
     context.fillRect(random() * canvas.width, random() * canvas.height, 2 + random() * 8, 1);
   }
@@ -225,7 +224,7 @@ function makeEarthTexture(topology) {
     context.stroke();
     context.save();
     context.clip('evenodd');
-    for (let index = 0; index < 7500; index += 1) {
+    for (let index = 0; index < Math.max(32, 7500 * detailScale * detailScale); index += 1) {
       const y = random() * canvas.height;
       context.fillStyle = random() > 0.5 ? 'rgba(209,184,94,0.11)' : 'rgba(40,67,34,0.12)';
       context.beginPath();
@@ -242,12 +241,12 @@ function makeEarthTexture(topology) {
   }
   const texture = new THREE.CanvasTexture(canvas);
   texture.colorSpace = THREE.SRGBColorSpace;
-  texture.anisotropy = 4;
+  texture.anisotropy = compact ? 1 : 2;
   return texture;
 }
 
-function makeAtmosphere() {
-  return new THREE.Mesh(new THREE.SphereGeometry(EARTH_RADIUS * 1.026, 64, 40), new THREE.ShaderMaterial({
+function makeAtmosphere(compact) {
+  return new THREE.Mesh(new THREE.SphereGeometry(EARTH_RADIUS * 1.026, compact ? 32 : 48, compact ? 20 : 32), new THREE.ShaderMaterial({
     transparent: true,
     depthWrite: false,
     blending: THREE.AdditiveBlending,
@@ -274,15 +273,21 @@ function makeAtmosphere() {
 }
 
 export function createCosmicWorld(options = {}) {
+  const compact = Boolean(options.compact);
+  const desiredWidth = compact ? 1024 : 2048;
+  const supportedWidth = Number.isFinite(options.textureWidth) ? options.textureWidth : desiredWidth;
+  const textureWidth = 2 ** Math.floor(Math.log2(Math.max(16, Math.min(desiredWidth, supportedWidth))));
   const group = new THREE.Group();
   group.name = 'KOS — the universe to Korean origins';
-  const galaxy = makeGalaxy();
-  group.add(galaxy, makeDistantStars());
+  const galaxy = makeGalaxy(compact ? 8500 : 16000);
+  group.add(galaxy, makeDistantStars(compact ? 600 : 1000));
 
   const earthSystem = new THREE.Group();
   const rotatingEarth = new THREE.Group();
   earthSystem.add(rotatingEarth);
-  const fallbackTexture = makeEarthTexture();
+  // A small placeholder avoids keeping two atlas-sized canvases alive while
+  // the geographic texture is drawn and uploaded on memory-limited browsers.
+  const fallbackTexture = makeEarthTexture(null, Math.min(128, textureWidth), compact);
   const planetMaterial = new THREE.MeshStandardMaterial({
     map: fallbackTexture,
     roughness: 0.88,
@@ -290,10 +295,10 @@ export function createCosmicWorld(options = {}) {
     emissive: 0x3c2731,
     emissiveIntensity: 0.19,
   });
-  const planet = new THREE.Mesh(new THREE.SphereGeometry(EARTH_RADIUS, 96, 64), planetMaterial);
+  const planet = new THREE.Mesh(new THREE.SphereGeometry(EARTH_RADIUS, compact ? 48 : 64, compact ? 32 : 40), planetMaterial);
   planet.name = 'Geographic Earth — olive land and burgundy ocean';
   rotatingEarth.add(planet);
-  earthSystem.add(makeAtmosphere());
+  earthSystem.add(makeAtmosphere(compact));
   group.add(earthSystem);
 
   const koreaDirection = geographicVector(KOREA_LAT, KOREA_LON);
@@ -407,23 +412,27 @@ export function createCosmicWorld(options = {}) {
     return { position, target, landmark };
   }
 
-  const ready = Promise.resolve(options.worldData || fetch(new URL('./world-110m.json', import.meta.url))
+  const atlasRequest = new AbortController();
+  const ready = Promise.resolve(options.worldData || fetch(new URL('./world-110m.json', import.meta.url), { signal: atlasRequest.signal })
     .then((response) => {
       if (!response.ok) throw new Error(`World atlas: ${response.status}`);
       return response.json();
     }))
     .then((topology) => {
       if (disposed) return false;
-      const texture = makeEarthTexture(topology);
+      const texture = makeEarthTexture(topology, textureWidth, compact);
       planetMaterial.map = texture;
       planetMaterial.needsUpdate = true;
       fallbackTexture.dispose();
+      fallbackTexture.image.width = 1;
+      fallbackTexture.image.height = 1;
       return true;
     })
     .catch(() => false);
 
   function dispose() {
     disposed = true;
+    atlasRequest.abort();
     const geometries = new Set();
     const materials = new Set();
     const textures = new Set();
@@ -438,7 +447,13 @@ export function createCosmicWorld(options = {}) {
     });
     for (const geometry of geometries) geometry.dispose();
     for (const material of materials) material.dispose();
-    for (const texture of textures) texture.dispose();
+    for (const texture of textures) {
+      texture.dispose();
+      // CanvasTexture.dispose releases the GPU allocation, while shrinking the
+      // source releases the canvas backing store even if this world is retained.
+      texture.image.width = 1;
+      texture.image.height = 1;
+    }
   }
 
   update(0, 0);
