@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="300" height="400" viewBox="0 0 300 400" role="img" aria-labelledby="odyssey-map-title odyssey-map-desc">
+  <title id="odyssey-map-title">A voyage through Korea's growing landscapes</title>
+  <desc id="odyssey-map-desc">Illustrated route through Korean growing landscapes; not supplier locations. Approximate regional markers connect Boseong tea and matcha, Goheung yuja, and Geumsan ginseng. South Korea and Jeju are shown in olive with a gold voyage line.</desc>
+  <defs>
+    <linearGradient id="odyssey-land" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#91a36b" stop-opacity=".24"/>
+      <stop offset="1" stop-color="#586937" stop-opacity=".1"/>
+    </linearGradient>
+    <linearGradient id="odyssey-route" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0" stop-color="#e4c65b" stop-opacity=".32"/>
+      <stop offset="1" stop-color="#f0dea0" stop-opacity=".65"/>
+    </linearGradient>
+    <path id="odyssey-mainland" d="M72.6 95.7 75.2 90.8 94.4 92.7 111.1 68.8 141.6 66.2 159.9 62.7 166.1 49.9 203.2 112.4 213.7 146.8 214.2 207.9 198 237 158.9 247.2 124.6 269.2 85.9 273.7 81.1 244.8 89 205.1 70.1 149.9 102 141.1 72.6 95.7Z"/>
+    <clipPath id="odyssey-land-clip"><use href="#odyssey-mainland"/></clipPath>
+    <g id="odyssey-stop">
+      <circle r="9" fill="none" stroke="#e4c65b" stroke-width=".7" stroke-opacity=".25"/>
+      <circle r="3.3" fill="#e4c65b"/>
+      <circle r="1.3" fill="#fff2bf"/>
+    </g>
+  </defs>
+
+  <!-- Mainland coastline: Natural Earth / world-atlas 110m, projected at 36° N.
+       Jeju and coastal details are illustrated. Pins represent growing regions. -->
+  <g fill="none" stroke="#e4c65b" stroke-width=".6" opacity=".1">
+    <path d="M15 133H283M15 208H283M15 283H283M15 358H283" stroke-dasharray="2 7"/>
+    <path d="M46 91C33 129 33 182 47 216S53 286 39 317"/>
+    <path d="M35 88C20 138 24 183 37 220S41 289 28 317"/>
+    <path d="M237 87C265 136 264 192 244 242S229 307 247 341"/>
+    <path d="M247 82C280 134 276 198 257 247S243 314 259 344"/>
+  </g>
+
+  <use href="#odyssey-mainland" fill="url(#odyssey-land)" stroke="#d8bd72" stroke-opacity=".49" stroke-width="1" stroke-linejoin="round"/>
+  <g clip-path="url(#odyssey-land-clip)" fill="none" stroke="#91a36b" stroke-width=".75" opacity=".23">
+    <path d="M166 62C165 95 176 127 161 155S150 204 156 245"/>
+    <path d="M177 76C176 110 187 136 175 163S164 209 170 246"/>
+    <path d="M153 69C151 110 162 130 147 162S137 210 142 260"/>
+    <path d="M94 146C115 155 123 169 139 172S168 177 193 169"/>
+    <path d="M91 214C114 217 126 228 143 223S167 218 195 225"/>
+  </g>
+  <g fill="#75884c" fill-opacity=".16" stroke="#d8bd72" stroke-opacity=".35" stroke-width=".7" stroke-linejoin="round">
+    <path d="M71 332C76 328 87 324 101 323L108 326 103 331C93 337 80 338 72 336Z"/>
+    <path d="m84 281 5-3 4 2-2 4-5 1Z"/>
+    <path d="m118 281 4-2 4 3-3 3-4-1Z"/>
+    <path d="m157 257 5-2 3 5-4 3-3-2Z"/>
+    <path d="m174 252 4-2 4 5-3 5-4-3Z"/>
+  </g>
+
+  <g transform="translate(29 47)" fill="none" stroke="#e4c65b" stroke-width=".7" stroke-opacity=".55">
+    <circle r="12" stroke-opacity=".18"/>
+    <path d="M0-10V10M-10 0H10" stroke-opacity=".3"/>
+    <path d="M0-9 3 3 0 1-3 3Z" fill="#e4c65b" fill-opacity=".5" stroke="none"/>
+    <text y="-18" fill="#f0dea0" fill-opacity=".7" stroke="none" font-family="Arial, Helvetica, sans-serif" font-size="8" text-anchor="middle">N</text>
+  </g>
+  <text x="148" y="102" fill="#f0dea0" fill-opacity=".38" font-family="Arial, Helvetica, sans-serif" font-size="8" letter-spacing="1.7" text-anchor="middle">SOUTH KOREA</text>
+
+  <!-- A continuous illustrated voyage, rather than a transport or supplier route. -->
+  <path id="odyssey-voyage-route" d="M111.4 253.5C105 260 111 270 120.3 262C146 241 153 214 129 182.7" fill="none" stroke="url(#odyssey-route)" stroke-width="1.5" stroke-linecap="round"/>
+  <path d="m135 221 2-4-4 1" fill="none" stroke="#f0dea0" stroke-opacity=".5" stroke-width=".8" stroke-linecap="round" stroke-linejoin="round"/>
+  <g fill="none" stroke="#e4c65b" stroke-opacity=".35" stroke-width=".75">
+    <path d="M111.4 253.5 78 246H26"/>
+    <path d="M120.3 262 142 288H169"/>
+    <path d="M129 182.7 163 169H187"/>
+  </g>
+  <use href="#odyssey-stop" x="111.4" y="253.5" data-stop="tea"/>
+  <use href="#odyssey-stop" x="120.3" y="262" data-stop="yuzu"/>
+  <use href="#odyssey-stop" x="129" y="182.7" data-stop="ginseng"/>
+  <g fill="#f5ecda" font-family="Georgia, 'Times New Roman', serif" font-size="12">
+    <text x="25" y="240">Boseong</text>
+    <text x="171" y="287">Goheung</text>
+    <text x="189" y="167">Geumsan</text>
+  </g>
+  <g fill="#e4c65b" fill-opacity=".7" font-family="Arial, Helvetica, sans-serif" font-size="7" letter-spacing="1">
+    <text x="25" y="258">TEA &amp; MATCHA</text>
+    <text x="171" y="301">YUJA</text>
+    <text x="189" y="181">GINSENG</text>
+  </g>
+  <g fill="#f0dea0" fill-opacity=".35" font-family="Arial, Helvetica, sans-serif" font-size="7" letter-spacing="1.3" text-anchor="middle">
+    <text x="150" y="380">GROWING LANDSCAPES</text>
+  </g>
+</svg>

@@ -64,6 +64,7 @@ export function createKoreanFarms() {
     return geometry;
   }
   const leafMat = material('#71863d', { side: THREE.DoubleSide, roughness: .65 });
+  const heroTeaMaterial = material('#71863d', { side: THREE.DoubleSide, roughness: .65, emissive: '#b99438', emissiveIntensity: 0 });
   const tintedLeaves = material('#ffffff', { side: THREE.DoubleSide, roughness: .65 });
   const teaLeafGeometry = leafGeometry(1.65, .6);
   const treeLeafGeometry = leafGeometry(1.5, .63);
@@ -150,7 +151,7 @@ export function createKoreanFarms() {
     mesh(cylinder, oliveDark, x, y + 5.9, z, teaShootGroup).scale.set(.055, 2.5, .055);
     for (let n = 0; n < 5; n++) {
       const leaf = mesh(teaLeafGeometry, oliveLight, x, y + 5.2 + n * .35, z, teaShootGroup);
-      leaf.material = leafMat;
+      leaf.material = heroTeaMaterial;
       leaf.rotation.set(.65, n * 2.399, n % 2 ? .5 : -.5);
       leaf.scale.setScalar(1.35 - n * .07);
       const droplet = mesh(tinySphere, dew, x + .24 * Math.cos(n * 2.399), y + 6 + n * .35, z + .24 * Math.sin(n * 2.399), teaShootGroup);
@@ -223,6 +224,8 @@ export function createKoreanFarms() {
   }
   rindGeometry.computeVertexNormals();
   const heroFruit = mesh(rindGeometry, goldenFruit, 0, 0, 0, heroYuzu);
+  const heroFruitMaterial = material('#efbb36', { roughness: .64, emissive: '#e7b23d', emissiveIntensity: 0 });
+  heroFruit.material = heroFruitMaterial;
   heroFruit.scale.setScalar(.95);
   mesh(cylinder, bark, 0, 1.12, 0, heroYuzu).scale.set(.045, .5, .045);
   const heroBranch = mesh(cylinder, bark, -.8, 1.42, .25, heroYuzu);
@@ -331,6 +334,59 @@ export function createKoreanFarms() {
   }
   for (let n = 0; n < 7; n++) mesh(tinySphere, ginsengBerries.material, Math.cos(n * .897) * .18, 4.65 + (n % 2) * .12, Math.sin(n * .897) * .18, harvest).scale.setScalar(.11);
 
+  // The visitor discovers a living ingredient in its actual three-dimensional
+  // setting. These small gold droplets have volume, depth and occlusion; they
+  // are not sprites or a screen overlay. Only the chosen hero receives light.
+  const heroRootMaterial = material('#d9b479', { roughness: .95, emissive: '#b78c43', emissiveIntensity: 0 });
+  harvest.traverse((object) => {
+    if (object.isMesh && object.material === rootSkin) object.material = heroRootMaterial;
+  });
+  function discoveryCluster(id, parent, center, radius, height, beadSize, accent) {
+    const mat = material('#f2d584', {
+      roughness: .2, metalness: .18, emissive: '#e0ab40', emissiveIntensity: .7,
+      transparent: true, opacity: 0, depthWrite: false,
+    });
+    const object = keep(new THREE.InstancedMesh(tinySphere, mat, 12));
+    object.name = `${id} — discovered living ingredient`;
+    object.visible = false;
+    object.frustumCulled = false;
+    parent.add(object);
+    return { id, object, mat, center: new THREE.Vector3(...center), radius, height, beadSize, accent, strength: 0 };
+  }
+  const discoveries = [
+    discoveryCluster('tea', teaShootGroup, [-1.7, terrainHeight(-1.7, -1912) + 6.5, -1912], 1.45, .65, .065, heroTeaMaterial),
+    discoveryCluster('yuzu', heroYuzu, [0, .12, 0], 1.22, .45, .045, heroFruitMaterial),
+    discoveryCluster('ginseng', harvest, [0, .1, 0], 1.75, 1.55, .06, heroRootMaterial),
+  ];
+  let discoveredId = null;
+  let previousDiscoveryTime = null;
+  function setDiscovery(id) {
+    discoveredId = discoveries.some((entry) => entry.id === id) ? id : null;
+  }
+  function updateDiscovery(time) {
+    const delta = previousDiscoveryTime === null ? 1 / 60 : THREE.MathUtils.clamp(time - previousDiscoveryTime, 0, .1);
+    previousDiscoveryTime = time;
+    const ease = 1 - Math.exp(-delta * 5);
+    for (const entry of discoveries) {
+      entry.strength += ((entry.id === discoveredId ? 1 : 0) - entry.strength) * ease;
+      const strength = entry.strength;
+      entry.object.visible = strength > .002;
+      entry.mat.opacity = strength * .78;
+      entry.accent.emissiveIntensity = strength * (.15 + Math.sin(time * 1.7) * .045);
+      if (!entry.object.visible) continue;
+      for (let n = 0; n < 12; n++) {
+        const angle = n / 12 * Math.PI * 2 + time * .22;
+        const breath = 1 + Math.sin(time * .6 + n * .9) * .065;
+        const x = entry.center.x + Math.cos(angle) * entry.radius * breath;
+        const y = entry.center.y + Math.sin(angle * 2 + time * .3) * entry.height;
+        const z = entry.center.z + Math.sin(angle) * entry.radius * breath;
+        const size = entry.beadSize * strength * (.85 + Math.sin(time * 1.4 + n) * .15);
+        setInstance(entry.object, n, x, y, z, size, size, size, time * .16 + n, angle, 0);
+      }
+      entry.object.instanceMatrix.needsUpdate = true;
+    }
+  }
+
   // Disturbed earth stays opaque and geometric rather than a sprite effect.
   const soilParticles = instance(tinySphere, burgundySoil, 90, 'Earth falling from harvested root');
   const particleSeeds = [];
@@ -389,6 +445,7 @@ export function createKoreanFarms() {
     harvest.rotation.z = harvestProgress * -.08;
     heroYuzu.rotation.z = Math.sin(time * .65) * .022;
     teaShootGroup.rotation.z = Math.sin(time * .8) * .003;
+    updateDiscovery(time);
     for (let n = 0; n < ginsengHeroLeaves.length; n++) ginsengHeroLeaves[n].rotation.x = .95 + Math.sin(time * 1.1 + n) * .055;
     soilParticles.visible = harvestProgress > .02 && harvestProgress < .99;
     if (soilParticles.visible) {
@@ -413,7 +470,7 @@ export function createKoreanFarms() {
   });
   soilParticles.frustumCulled = false;
   return {
-    group, getCamera, update,
+    group, getCamera, update, setDiscovery,
     dispose() { for (const resource of resources) resource.dispose(); },
   };
 }

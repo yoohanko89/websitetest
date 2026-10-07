@@ -6,7 +6,8 @@ Its MIT license is preserved as `THREE-LICENSE.txt`. The application imports
 these local files; it makes no CDN or remote graphics requests.
 
 The editable 3D sources are `../journey-3d.js`, `../cosmic-world.js`,
-`../korean-landscapes.js` and `../korean-farms.js`. They render actual meshes,
+`../korean-landscapes.js` and `../korean-farms.js`. The visitor-led journey
+controller is `../odyssey.js`; the atlas is `../odyssey-map.svg`. They render actual meshes,
 instanced vegetation, volumetric star points and one perspective camera. The
 Korean terrain is an artistic interpretation, not surveyed geographic geometry.
 

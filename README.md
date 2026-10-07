@@ -1,11 +1,21 @@
 # KO'S — Korean Original Soul
 
-An English website for international ingredient buyers, opening with an
-83-second, automatically playing real-time Three.js camera journey: spiral
-galaxy → rotating Earth → Korea → Korean landscapes → tea leaves → yuzu orchard
-→ ginseng harvest. Burgundy, gold yellow and olive green connect the scenes to
-the KO'S brand. Visitors can pause, replay or seek through the film; reduced
-motion preferences pause the journey by default.
+An English ingredient website with **Your Korean Odyssey**, a visitor-led
+3D journey. An automatically playing galaxy → orbiting Earth → Korea zoom
+pauses on arrival and invites the visitor to begin. The camera follows Jeju,
+the south coast, Maisan and Buseoksa before entering tea, yuzu and ginseng
+farms. Visitors choose growing regions on an illustrated atlas, fly there in
+3D and deliberately discover the leaf, fruit and root. Three discoveries
+reveal KO'S ingredient philosophy and buyer links. Burgundy, gold yellow
+and olive green connect the voyage to the brand.
+
+The underlying camera route spans 83 seconds; visitor decisions pause the
+route at Korea (24s), tea (63.4s), yuzu (72.2s) and ginseng (82.4s).
+The atlas moves along the actual camera route, rather than replacing the
+3D scene with photos. Leaves and ingredient discovery accents remain alive
+while a visitor reads a farm story. Reduced motion starts paused and makes
+explicit destination choices immediate. Discovery marks last only for the
+current page visit; Restart clears them.
 
 ## Public site
 
@@ -30,12 +40,16 @@ build required. Check the server internally with `curl -I http://127.0.0.1:8000/
 The rendered English page is in `index.html`, with presentation in `styles.css`
 and interactions in `app.js`. Editorial source copy is kept in
 `assets/buyer-content.json`; editing that JSON alone does not regenerate the page.
-The 3D scene modules, vendored Three.js and geographic data are served locally
+The 3D scene modules, `assets/odyssey.js` visitor controller, vendored Three.js and geographic data are served locally
 under `assets/`, with source and license notes in `assets/vendor/README.md`.
 
-Validate desktop and mobile navigation, WebGL scene rendering, playback and
-timeline controls, reduced motion, ingredient links, FAQ disclosures and a
-complete sourcing-brief download. The page's ingredient copy is available in
+Validate desktop/mobile navigation, actual WebGL rendering, the Korea arrival
+checkpoint, Begin, continuous atlas travel, deliberate farm discoveries,
+truthful passport progress, final brand reveal and Restart. A map jump must not
+record a discovery. Check reduced motion, ingredient links, FAQ disclosures
+and a complete sourcing-brief download. The journey hooks are
+`window.__KOS_JOURNEY` (camera/playback) and `window.__KOS_ODYSSEY` (visitor
+state); their `getState()` methods support browser verification. The page's ingredient copy is available in
 HTML without JavaScript.
 
 ## Artwork and inquiries

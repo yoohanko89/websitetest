@@ -58,16 +58,22 @@ export async function createJourney(canvas, onChange) {
   let landmark = 'Milky Way';
   let phase = 'galaxy';
   let disposed = false;
+  let travel = null;
+  let exploring = false;
+  let ambientSeconds = 0;
+  let discovery = null;
+  let width = 1, height = 1;
 
   function resize() {
     const box = canvas.parentElement.getBoundingClientRect();
+    width = Math.max(1, box.width); height = Math.max(1, box.height);
     renderer.setSize(Math.max(1, box.width), Math.max(1, box.height), false);
     camera.aspect = Math.max(1, box.width) / Math.max(1, box.height);
     camera.updateProjectionMatrix();
-    render();
+    render(true);
   }
 
-  function render() {
+  function render(forceNotice = false) {
     let pose;
     let up = cosmicUp;
     if (seconds <= 26) {
@@ -96,8 +102,8 @@ export async function createJourney(canvas, onChange) {
       up = localUp;
       phase = 'farms';
     }
-    landscape.update(seconds, THREE.MathUtils.clamp((seconds - 29) / 27, 0, 1));
-    farms.update(seconds, THREE.MathUtils.clamp((seconds - 56) / 27, 0, 1));
+    landscape.update(seconds + ambientSeconds, THREE.MathUtils.clamp((seconds - 29) / 27, 0, 1));
+    farms.update(seconds + ambientSeconds, THREE.MathUtils.clamp((seconds - 56) / 27, 0, 1));
     // Reveal the tangent terrain only after the camera has entered the
     // atmosphere. Dense dawn mist conceals the rectangular modelling boundary.
     landscape.group.visible = seconds > 27.15;
@@ -121,49 +127,85 @@ export async function createJourney(canvas, onChange) {
     camera.lookAt(pose.target);
     camera.near = Math.max(.025, Math.min(300, pose.position.distanceTo(pose.target) * .001));
     camera.far = seconds < 30 ? 900000 : 4000;
+    // Leave room beneath the ingredient for the visitor's discovery card.
+    if (innerWidth < 769 && seconds > 56) {
+      const rootFraming = smooth((seconds - 77) / 4);
+      camera.fov = THREE.MathUtils.lerp(60, 78, rootFraming);
+      camera.setViewOffset(width, height, 0, height * THREE.MathUtils.lerp(.085, .25, rootFraming), width, height);
+    } else { camera.fov = 50; camera.clearViewOffset(); }
     camera.updateProjectionMatrix();
     landmark = pose.landmark;
     renderer.render(scene, camera);
-    if (Math.abs(seconds - lastNotice) > .12 || !playing) { lastNotice = seconds; onChange(getState()); }
+    if (forceNotice || Math.abs(seconds - lastNotice) > .12) { lastNotice = seconds; onChange(getState()); }
   }
 
   function getState() {
     return { ready: true, duration, seconds, progress: seconds / duration, playing, visible, phase, landmark,
+      travelling: Boolean(travel), exploring, discovery,
       camera: camera.position.toArray(), triangles: renderer.info.render.triangles,
       points: renderer.info.render.points, drawCalls: renderer.info.render.calls, webgl: renderer.capabilities.isWebGL2 };
   }
   function tick(now) {
     raf = 0;
-    if (disposed || !playing || !visible) { previous = 0; return; }
-    if (previous) seconds = Math.min(duration, seconds + Math.min((now - previous) / 1000, .15));
+    if (disposed || (!playing && !travel && !exploring) || !visible) { previous = 0; return; }
+    const delta = previous ? Math.min((now - previous) / 1000, .15) : 0;
+    let arrived = null;
+    if (travel) {
+      travel.elapsed = Math.min(travel.duration, travel.elapsed + delta);
+      const progress = smooth(travel.elapsed / travel.duration);
+      seconds = THREE.MathUtils.lerp(travel.from, travel.to, progress);
+      if (travel.elapsed >= travel.duration) { seconds = travel.to; arrived = travel; travel = null; }
+    } else if (playing) seconds = Math.min(duration, seconds + delta);
+    if (exploring) ambientSeconds += delta;
     previous = now;
     if (seconds >= duration) playing = false;
-    render();
-    if (playing) raf = requestAnimationFrame(tick);
+    render(Boolean(arrived));
+    if (arrived) arrived.resolve(true);
+    if ((playing || travel || exploring) && !raf) raf = requestAnimationFrame(tick);
   }
+  function cancelTravel() { if (travel) { const cancelled = travel; travel = null; cancelled.resolve(false); } }
   function play() {
+    cancelTravel();
     if (seconds >= duration) seconds = 0;
     playing = true; previous = 0;
     if (!raf && visible) raf = requestAnimationFrame(tick);
     onChange(getState());
   }
   function pause() {
+    cancelTravel();
     playing = false; previous = 0;
-    cancelAnimationFrame(raf); raf = 0;
+    if (!exploring) { cancelAnimationFrame(raf); raf = 0; }
     onChange(getState());
   }
   function seek(value) {
+    cancelTravel();
     seconds = THREE.MathUtils.clamp(Number(value) || 0, 0, duration);
-    previous = 0; render();
+    previous = 0; render(true);
   }
+  function flyTo(value, flightDuration = 6) {
+    cancelTravel(); playing = false; previous = 0;
+    const target = THREE.MathUtils.clamp(Number(value) || 0, 0, duration);
+    if (flightDuration <= 0 || Math.abs(target - seconds) < .01) { seek(target); return Promise.resolve(true); }
+    return new Promise(resolve => {
+      travel = { from: seconds, to: target, duration: flightDuration, elapsed: 0, resolve };
+      if (!raf && visible) raf = requestAnimationFrame(tick);
+      onChange(getState());
+    });
+  }
+  function setExploration(active) {
+    exploring = Boolean(active); previous = 0;
+    if (exploring && visible && !raf) raf = requestAnimationFrame(tick);
+    if (!exploring && !playing && !travel) { cancelAnimationFrame(raf); raf = 0; }
+  }
+  function setDiscovery(id) { discovery = id || null; farms.setDiscovery(discovery); render(true); }
   function setVisible(value) {
     visible = value; previous = 0;
-    if (visible && playing && !raf) raf = requestAnimationFrame(tick);
+    if (visible && (playing || travel || exploring) && !raf) raf = requestAnimationFrame(tick);
     if (!visible) { cancelAnimationFrame(raf); raf = 0; }
     onChange(getState());
   }
   resize();
   const observer = new ResizeObserver(resize); observer.observe(canvas.parentElement);
-  return { play, pause, seek, getState, setVisible,
+  return { play, pause, seek, flyTo, setExploration, setDiscovery, getState, setVisible,
     dispose() { disposed = true; pause(); observer.disconnect(); cosmos.dispose(); landscape.dispose(); farms.dispose(); renderer.dispose(); } };
 }

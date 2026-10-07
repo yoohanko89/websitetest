@@ -11,9 +11,9 @@ button,input,textarea{font:inherit}button,a{-webkit-tap-highlight-color:transpar
 .menu-toggle{display:none;background:none;border:0;padding:12px;color:inherit;width:44px;height:44px}.menu-toggle span{display:block;width:22px;height:1px;background:currentColor;margin:6px 0;transition:transform .25s}.menu-toggle[aria-expanded=true] span:first-child{transform:translateY(3.5px) rotate(45deg)}.menu-toggle[aria-expanded=true] span:last-child{transform:translateY(-3.5px) rotate(-45deg)}
 .eyebrow{text-transform:uppercase;font-size:10px;line-height:1.7;letter-spacing:.21em;font-weight:500;margin-bottom:22px}.section-shell{padding:100px max(28px,calc((100vw - 1180px)/2))}h2{font-family:var(--serif);font-size:clamp(38px,4.8vw,66px);font-weight:400;line-height:1.08;letter-spacing:-.035em}h2 em{font-weight:400}p{font-size:14px}
 .button{display:inline-flex;align-items:center;justify-content:center;gap:24px;text-decoration:none;padding:15px 23px;font-size:11px;letter-spacing:.025em;font-weight:500;min-height:49px;border:1px solid transparent;transition:background .25s,transform .25s}.button:hover{transform:translateY(-2px)}.button-gold{color:var(--space);background:var(--gold)}.button-gold:hover{background:#F1D67A}.button-outline{color:var(--cream);border-color:rgba(245,240,230,.35);background:transparent}.button-outline:hover{border-color:var(--gold)}
-.button span,.nav-cta span,.text-link span{display:inline-block;position:relative;width:11px;height:11px;font-size:0;vertical-align:middle;flex-shrink:0}
-.button span::before,.nav-cta span::before,.text-link span::before{content:'';position:absolute;top:1px;right:1px;width:7px;height:7px;border-top:1px solid currentColor;border-right:1px solid currentColor}
-.button span::after,.nav-cta span::after,.text-link span::after{content:'';position:absolute;left:0;top:5px;width:11px;height:1px;background:currentColor;transform:rotate(-45deg);transform-origin:center}
+.button span,.nav-cta span,.text-link span,.odyssey-buyer-link span,.route-arrow{display:inline-block;position:relative;width:11px;height:11px;font-size:0;vertical-align:middle;flex-shrink:0}
+.button span::before,.nav-cta span::before,.text-link span::before,.odyssey-buyer-link span::before,.route-arrow::before{content:'';position:absolute;top:1px;right:1px;width:7px;height:7px;border-top:1px solid currentColor;border-right:1px solid currentColor}
+.button span::after,.nav-cta span::after,.text-link span::after,.odyssey-buyer-link span::after,.route-arrow::after{content:'';position:absolute;left:0;top:5px;width:11px;height:1px;background:currentColor;transform:rotate(-45deg);transform-origin:center}
 .cosmic-journey{position:relative;background:var(--space);color:var(--cream);height:auto}.journey-stage{position:relative;height:100svh;min-height:760px;overflow:hidden;isolation:isolate;background:radial-gradient(ellipse at 65% 50%,#743649,var(--wine-deep) 55%,var(--space));}
 .js.motion-on .cosmic-journey{height:500svh;min-height:3600px}.js.motion-on .journey-stage{position:sticky;top:0}
 .scene{position:absolute;inset:0;pointer-events:none;will-change:opacity;overflow:hidden}.scene-galaxy{opacity:var(--galaxy-opacity,1);z-index:0}#galaxy-canvas{display:block;width:100%;height:100%;transform:translate(var(--galaxy-x,0px),var(--galaxy-y,0px)) scale(var(--galaxy-scale,1));transform-origin:66% 50%;will-change:transform}.galaxy-vignette{position:absolute;inset:0;background:linear-gradient(90deg,rgba(36,11,24,.74),rgba(36,11,24,.25) 40%,transparent 70%),radial-gradient(ellipse,transparent 35%,rgba(36,11,24,.6));}
@@ -95,3 +95,75 @@ button,input,textarea{font:inherit}button,a{-webkit-tap-highlight-color:transpar
   .film-status,.film-nojs{left:24px;right:24px}
   .film-ready .film-status{bottom:150px}
 }
+
+/* The Korean Odyssey: a visitor-led voyage and three ingredient discoveries. */
+[hidden]{display:none!important}
+#main-nav{gap:24px}
+.film-caption{bottom:180px;max-width:500px}
+#film-waypoint-story{font-size:11px;line-height:1.7;margin-top:8px;max-width:390px;color:rgba(245,240,230,.8)}
+.film-buttons button{min-height:40px}.film-buttons a{font-size:10px}
+.odyssey-panel{position:absolute;z-index:12;left:6vw;top:24%;width:390px;max-width:calc(100% - 48px);padding:24px 27px;background:rgba(42,16,29,.87);color:var(--cream);border:1px solid rgba(228,198,91,.23);border-left:2px solid var(--gold);backdrop-filter:blur(18px);box-shadow:0 14px 45px rgba(23,8,15,.18)}
+.odyssey-panel .eyebrow{color:var(--gold);font-size:8px;letter-spacing:.17em;margin-bottom:12px}
+.odyssey-panel h2{font-size:42px;line-height:1.05;letter-spacing:-.035em;margin-bottom:16px}
+.odyssey-panel h2 em{color:var(--gold)}
+#odyssey-description,.odyssey-insight{font-size:12px;line-height:1.8;color:rgba(245,240,230,.85)}
+.odyssey-insight{border-left:1px solid rgba(228,198,91,.5);padding-left:13px;color:var(--cream)}
+.odyssey-actions{margin-top:20px}.odyssey-actions .button{font-size:10px;min-height:44px;padding:12px 18px}
+#odyssey-finish-actions{margin-top:20px;display:flex;flex-direction:column;align-items:flex-start;gap:13px}
+#odyssey-finish-actions .button{font-size:10px;padding:12px 18px;min-height:44px}
+.odyssey-buyer-link{display:inline-flex;align-items:center;gap:12px;font-size:10px;text-decoration:none;color:var(--gold);padding:3px 0}
+.odyssey-restart{font-size:9px;border:0;border-bottom:1px solid rgba(245,240,230,.25);padding:2px 0;background:none;color:rgba(245,240,230,.65)}
+[data-odyssey-mode=complete] .odyssey-panel{top:20%}
+[data-odyssey-mode=complete] .odyssey-passport{display:none}
+[data-odyssey-mode=arrival] .film-caption,[data-odyssey-mode=stop] .film-caption,[data-odyssey-mode=complete] .film-caption,[data-odyssey-mode=overview] .film-caption{display:none}
+.odyssey-map-toggle{position:absolute;z-index:16;right:6vw;top:105px;background:rgba(42,16,29,.84);color:var(--gold);border:1px solid rgba(228,198,91,.45);padding:10px 14px;min-height:42px;display:flex;gap:13px;align-items:center;font-size:10px;backdrop-filter:blur(16px)}
+.odyssey-map-toggle>span:last-child{font-size:9px;color:rgba(245,240,230,.75);font-variant-numeric:tabular-nums}
+.compass-icon{font-size:19px;line-height:1}
+.odyssey-atlas{position:absolute;z-index:18;right:6vw;top:155px;width:330px;padding:22px;background:rgba(42,16,29,.95);border:1px solid rgba(228,198,91,.3);color:var(--cream);backdrop-filter:blur(22px);box-shadow:0 16px 42px rgba(20,8,16,.24)}
+.atlas-heading{display:flex;gap:16px;align-items:flex-start}.atlas-heading .eyebrow{color:var(--gold);font-size:7px;margin-bottom:9px}
+.atlas-heading h2{font-size:24px;line-height:1.15;letter-spacing:-.02em}
+#odyssey-map-close{margin-left:auto;background:none;border:0;color:var(--gold);font-size:24px;line-height:1;padding:4px;min-width:32px;min-height:32px}
+.atlas-body{display:grid;grid-template-columns:45% 55%;align-items:center;margin:15px -7px 4px}
+.atlas-body img{width:100%;height:auto;display:block}
+.atlas-body nav{display:flex;flex-direction:column;gap:4px;padding-left:8px}
+.atlas-body nav button{position:relative;display:flex;flex-direction:column;align-items:flex-start;text-align:left;width:100%;min-height:78px;padding:11px 8px 10px 10px;color:var(--cream);background:none;border:0;border-left:1px solid rgba(228,198,91,.26)}
+.atlas-body nav button:hover,.atlas-body nav button.selected{background:rgba(228,198,91,.065);border-left-color:var(--gold)}
+.atlas-body nav button>span{font-size:7px;letter-spacing:.08em;color:var(--gold);margin-bottom:3px}
+.atlas-body nav strong{font-size:11px;font-weight:400}.atlas-body nav small{font-size:8px;color:rgba(245,240,230,.58);margin-top:3px}
+.atlas-body nav button.visited::after{content:'';position:absolute;right:4px;top:12px;width:5px;height:5px;border-radius:50%;background:var(--gold);box-shadow:0 0 9px rgba(228,198,91,.5)}
+.atlas-count{border-top:1px solid rgba(228,198,91,.18);padding-top:12px;margin-top:6px;font-size:9px;color:var(--gold);letter-spacing:.04em}
+.atlas-art-note{font-size:8px;color:rgba(245,240,230,.5);margin-top:6px}
+.odyssey-passport{position:absolute;left:6vw;bottom:111px;z-index:10;display:flex;align-items:center;gap:20px;color:var(--cream)}
+.passport-label{font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:rgba(245,240,230,.65);margin-right:10px}
+.discovery-stamp{display:inline-flex;align-items:center;gap:8px;opacity:.35;font-size:9px;letter-spacing:.05em;transition:opacity .5s,color .5s}
+.discovery-stamp svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.2;stroke-linecap:round;stroke-linejoin:round}
+.discovery-stamp.found{opacity:1;color:var(--gold)}
+.odyssey-route-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:46px}
+.odyssey-route-cards>a{position:relative;text-align:left;display:flex;flex-direction:column;text-decoration:none;color:var(--burgundy);border:1px solid var(--line);background:rgba(255,255,255,.25);padding:25px 24px;min-height:154px;transition:background .25s,border-color .25s}
+.odyssey-route-cards>a:hover{background:var(--paper);border-color:var(--olive)}
+.odyssey-route-cards>a>span:first-child{font-size:8px;letter-spacing:.10em;color:var(--olive);margin-bottom:20px}
+.odyssey-route-cards strong{font:400 25px/1.12 var(--serif);letter-spacing:-.025em;margin-bottom:7px}
+.odyssey-route-cards small{font-size:10px;color:var(--muted)}
+.odyssey-route-cards .route-arrow{position:absolute;right:22px;bottom:21px;color:var(--olive);font-size:0}
+.odyssey-art-note{font-size:10px;line-height:1.8;color:var(--muted);max-width:740px;margin-top:16px}
+@media(min-width:769px) and (max-height:740px){.odyssey-panel{top:23%;padding:20px 23px}.odyssey-panel h2{font-size:36px}.odyssey-panel .eyebrow{margin-bottom:9px}#odyssey-description,.odyssey-insight{font-size:11px}.odyssey-actions{margin-top:15px}.odyssey-passport{bottom:103px}[data-odyssey-mode=complete] .odyssey-panel{top:19%}}
+@media(max-width:768px){
+  .odyssey-panel{left:24px;right:24px;top:auto;bottom:115px;width:auto;padding:17px 19px}
+  .odyssey-panel .eyebrow{font-size:7px;letter-spacing:.13em;margin-bottom:9px}
+  .odyssey-panel h2{font-size:31px;line-height:1.06;margin-bottom:12px}
+  #odyssey-description,.odyssey-insight{font-size:11px;line-height:1.7}
+  .odyssey-actions{margin-top:14px}.odyssey-actions .button{font-size:9px;min-height:42px;padding:11px 15px}
+  #odyssey-finish-actions{margin-top:15px;gap:10px}#odyssey-finish-actions .button{font-size:9px;min-height:42px}
+  [data-odyssey-mode=complete] .odyssey-panel{top:auto;bottom:115px}
+  .odyssey-passport{top:99px;left:24px;bottom:auto;gap:13px}
+  .passport-label{display:none}.discovery-stamp{gap:5px;font-size:8px}.discovery-stamp svg{width:18px;height:18px}
+  .odyssey-map-toggle{top:91px;right:24px;gap:8px;font-size:9px;min-height:36px;padding:8px 10px}.compass-icon{font-size:16px}
+  .odyssey-atlas{left:24px;right:24px;top:141px;width:auto;padding:17px 18px}.atlas-heading h2{font-size:23px}
+  .atlas-body{grid-template-columns:43% 57%;margin-top:9px}.atlas-body nav button{min-height:73px;padding:9px 8px}
+  .atlas-count{padding-top:10px}.atlas-body nav small{font-size:7px}
+  .film-caption{left:24px;right:24px;bottom:126px}
+  .film-controls{bottom:19px}.film-buttons{gap:9px}.film-buttons button{padding:6px 9px;font-size:9px;min-height:38px}.film-time{font-size:8px}.film-buttons a{font-size:9px}
+  #film-waypoint-story{font-size:10px;max-width:280px}.film-ready .film-status{bottom:124px}
+  .odyssey-route-cards{grid-template-columns:1fr;gap:12px;margin-top:30px}.odyssey-route-cards>a{padding:20px 21px;min-height:126px}.odyssey-route-cards>a>span:first-child{margin-bottom:13px}.odyssey-route-cards strong{font-size:25px}.odyssey-art-note{font-size:9px}
+}
+@media(max-width:360px){.odyssey-panel{left:18px;right:18px;max-width:calc(100% - 36px);padding:15px 17px}.odyssey-panel h2{font-size:27px}.odyssey-passport{left:18px;gap:9px}.odyssey-map-toggle{right:18px;font-size:8px;gap:6px}.odyssey-atlas{left:18px;right:18px}.film-controls{left:18px;right:18px}.film-buttons{gap:7px}.film-time{font-size:7px}.film-buttons a{font-size:8px}}

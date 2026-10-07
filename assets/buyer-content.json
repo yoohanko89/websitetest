@@ -5,40 +5,40 @@
   },
   "hero": {
     "eyebrow": "KO'S · Korean Original Soul",
-    "title": "A universe of life. An origin worth knowing.",
-    "description": "From a distant galaxy to the soil beneath our feet. Discover the leaves, fruit and roots at the heart of Korean ingredients.",
-    "primaryCta": "Explore the ingredients",
-    "secondaryCta": "Plan a sourcing inquiry",
-    "scrollLabel": "Scroll to trace the origin"
+    "title": "A Korean Odyssey. Back to the beginning.",
+    "description": "Across a galaxy. Down to Earth. Into Korea. Your voyage to the leaf, the fruit and the living root.",
+    "primaryCta": "Begin the Odyssey",
+    "secondaryCta": "For international buyers",
+    "scrollLabel": "Explore below"
   },
   "journey": [
     {
       "id": "galaxy",
-      "title": "Everything begins with a connection.",
-      "description": "Light, water, earth and time. The story of an ingredient begins long before the harvest."
+      "title": "A distant beginning.",
+      "description": "Travel into a burgundy galaxy and find our living planet."
     },
     {
       "id": "earth",
       "title": "One living planet.",
-      "description": "Come closer to the land that gives each leaf, fruit and root its character."
+      "description": "Follow the orbiting Earth and zoom toward Korea."
     },
     {
       "id": "korea",
-      "title": "A closer look at Korea.",
-      "description": "From southern islands and coastal orchards to inland growing landscapes, an invitation to understand origin."
+      "title": "The journey becomes yours.",
+      "description": "Follow mountains, coastlines and cultivated fields. Discover Korea through a leaf, a fruit and a living root."
     },
     {
       "id": "farm",
-      "title": "Back to the source.",
-      "description": "A citrus skin catching the light. A new tea leaf. A root lifted from the soil. This is where our ingredient philosophy begins."
+      "title": "Three discoveries. One beginning.",
+      "description": "KO'S begins with the ingredient. Its origin, its character, and the care that carries it from the growing landscape to what you create next."
     }
   ],
   "origins": {
-    "eyebrow": "The Korean growing landscape",
-    "title": "Origin is more than a place on a map.",
+    "eyebrow": "Your Korean Odyssey",
+    "title": "Every ingredient has a beginning.",
     "paragraphs": [
-      "Our journey draws inspiration from Jeju, Korea's southern coast, Jeolla, Gyeongsang and Chungcheong. These landscapes introduce how climate, cultivation and harvest shape ingredients. They are a visual introduction to Korea, rather than a map of confirmed KO'S suppliers.",
-      "For a sourcing decision, the useful story is specific: the named farm or processor, country and region of origin, harvest date and the records attached to the actual lot. A regional reputation is a starting point for questions, not a substitute for traceability."
+      "For KO'S, that beginning deserves attention: the leaf before it becomes tea, the fruit before it becomes a flavor, and the root before it becomes an extract. Our Korean odyssey invites you to follow the landscape and come closer to the ingredients that give Korean food and drink their distinctive character.",
+      "Explore Korean green tea and matcha, yuzu—known in Korea as yuja—and ginseng. Discover how cultivation, harvest and processing shape their character. KO'S connects that sense of discovery with a practical conversation about origin, ingredient form and what you want to create."
     ],
     "regions": [
       "Jeju",
@@ -47,7 +47,7 @@
       "Gyeongsang",
       "Chungcheong"
     ],
-    "caption": "An illustrated journey through Korean growing landscapes. Confirm the origin of each proposed lot during sourcing."
+    "caption": "The voyage is a stylized 3D interpretation of Korean landscapes and farms. Region markers illustrate the story rather than confirmed supplier locations; ingredient images are generated artwork."
   },
   "ingredients": [
     {
