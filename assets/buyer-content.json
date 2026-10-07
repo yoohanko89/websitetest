@@ -4,9 +4,9 @@
     "description": "Explore Korean green tea, matcha, yuzu and ginseng with KO'S. A guide to ingredient origins, processing and the specifications international buyers should verify."
   },
   "hero": {
-    "eyebrow": "KO'S · Korean Original Soul",
-    "title": "A Korean Odyssey. Back to the beginning.",
-    "description": "Across a galaxy. Down to Earth. Into Korea. Your voyage to the leaf, the fruit and the living root.",
+    "eyebrow": "Korean Original Soul",
+    "title": "One mark. A Korean Odyssey.",
+    "description": "From a swirling mark to a living planet. Into Korea. Back to the leaf, the fruit and the root.",
     "primaryCta": "Begin the Odyssey",
     "secondaryCta": "For international buyers",
     "scrollLabel": "Explore below"
@@ -14,8 +14,8 @@
   "journey": [
     {
       "id": "galaxy",
-      "title": "A distant beginning.",
-      "description": "Travel into a burgundy galaxy and find our living planet."
+      "title": "A mark becomes a galaxy.",
+      "description": "Golden swirling apostrophes gather into a galaxy. A Korean odyssey begins with the mark in KO'S."
     },
     {
       "id": "earth",

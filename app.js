@@ -1,5 +1,5 @@
-import { createJourney } from './assets/journey-3d.js?v=20261007-stable';
-import { createOdyssey } from './assets/odyssey.js?v=20261007-stable';
+import { createJourney } from './assets/journey-3d.js?v=20261007-apostrophe';
+import { createOdyssey } from './assets/odyssey.js?v=20261007-apostrophe';
 const root = document.documentElement;
 root.classList.add('js');
 const journey = document.querySelector('#cosmic-journey');
@@ -56,7 +56,7 @@ function filmChanged(state) {
   seek.setAttribute('aria-valuetext', `${state.landmark}, ${Math.floor(state.seconds)} seconds`);
   document.querySelector('#film-time').textContent = state.seconds < 24 ? 'Finding Korea' : `${Math.round(state.progress * 100)}% of the route`;
   document.querySelector('#film-landmark').textContent = state.landmark;
-  const chapters = { galaxy: '01 / A DISTANT BEGINNING', earth: '02 / OUR LIVING PLANET', korea: '03 / YOUR ODYSSEY BEGINS', landscape: '04 / FOLLOW THE KOREAN LANDSCAPE', farms: '05 / FIND THE ESSENTIAL' };
+  const chapters = { galaxy: '01 / A MARK BECOMES A GALAXY', earth: '02 / OUR LIVING PLANET', korea: '03 / YOUR ODYSSEY BEGINS', landscape: '04 / FOLLOW THE KOREAN LANDSCAPE', farms: '05 / FIND THE ESSENTIAL' };
   document.querySelector('#film-chapter').textContent = chapters[state.phase];
   const opacity = Math.max(0, Math.min(1, (9 - state.seconds) / 3));
   const intro = document.querySelector('.copy-galaxy');

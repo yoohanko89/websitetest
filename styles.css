@@ -167,3 +167,12 @@ button,input,textarea{font:inherit}button,a{-webkit-tap-highlight-color:transpar
   .odyssey-route-cards{grid-template-columns:1fr;gap:12px;margin-top:30px}.odyssey-route-cards>a{padding:20px 21px;min-height:126px}.odyssey-route-cards>a>span:first-child{margin-bottom:13px}.odyssey-route-cards strong{font-size:25px}.odyssey-art-note{font-size:9px}
 }
 @media(max-width:360px){.odyssey-panel{left:18px;right:18px;max-width:calc(100% - 36px);padding:15px 17px}.odyssey-panel h2{font-size:27px}.odyssey-passport{left:18px;gap:9px}.odyssey-map-toggle{right:18px;font-size:8px;gap:6px}.odyssey-atlas{left:18px;right:18px}.film-controls{left:18px;right:18px}.film-buttons{gap:7px}.film-time{font-size:7px}.film-buttons a{font-size:8px}}
+
+/* One shared swirling apostrophe connects the wordmark to the 3D galaxy. */
+.logo{display:inline-flex;align-items:flex-start;gap:0}
+.brand-apostrophe{display:block;height:.54em;width:.36em;max-width:none;margin:.025em .01em 0 .015em;flex-shrink:0}
+.hero-wordmark{display:inline-flex;align-items:flex-start;font:400 clamp(78px,8.4vw,118px)/1 var(--serif);letter-spacing:-.025em;color:var(--gold);margin-bottom:19px}
+.copy-galaxy .eyebrow{margin-bottom:14px}
+.copy-galaxy h1{font-size:clamp(39px,4.1vw,58px);line-height:1.08;margin-bottom:20px}
+@media(max-width:768px){.hero-wordmark{font-size:78px;margin-bottom:18px}.copy-galaxy .eyebrow{margin-bottom:12px}.copy-galaxy h1{font-size:clamp(32px,8.7vw,42px);margin-bottom:17px}.copy-galaxy .hero-description{max-width:285px}}
+@media(max-width:360px){.hero-wordmark{font-size:68px;margin-bottom:16px}.copy-galaxy h1{font-size:29px}.copy-galaxy .hero-description{max-width:260px}}

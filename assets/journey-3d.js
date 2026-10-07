@@ -1,7 +1,7 @@
 import * as THREE from './vendor/three.module.js';
-import { createCosmicWorld } from './cosmic-world.js?v=20261007-stable';
-import { createKoreanLandscape, getKoreanLandscapeCamera } from './korean-landscapes.js?v=20261007-stable';
-import { createKoreanFarms } from './korean-farms.js?v=20261007-stable';
+import { createCosmicWorld } from './cosmic-world.js?v=20261007-apostrophe';
+import { createKoreanLandscape, getKoreanLandscapeCamera } from './korean-landscapes.js?v=20261007-apostrophe';
+import { createKoreanFarms } from './korean-farms.js?v=20261007-apostrophe';
 
 // One perspective camera, one WebGL scene. A tangent coordinate frame places
 // the Korean terrain on the globe and keeps local farm details numerically small.
@@ -151,8 +151,15 @@ export async function createJourney(canvas, onChange, { onUnavailable = () => {}
     camera.lookAt(pose.target);
     camera.near = Math.max(.025, Math.min(300, pose.position.distanceTo(pose.target) * .001));
     camera.far = seconds < 30 ? 900000 : 4000;
+    // First show the assembled brand galaxy, then fly into it. Place it beside
+    // the desktop wordmark and beneath the mobile copy without extra canvases.
+    if (seconds < 10.5) {
+      const wide = 1 - smooth((seconds - 7.4) / 3.1);
+      const narrowScreen = innerWidth < 769;
+      camera.fov = THREE.MathUtils.lerp(50, narrowScreen ? 115 : 70, wide);
+      camera.setViewOffset(width, height, narrowScreen ? 0 : -width * .16 * wide, narrowScreen ? -height * .21 * wide : 0, width, height);
     // Leave room beneath the ingredient for the visitor's discovery card.
-    if (innerWidth < 769 && seconds > 56) {
+    } else if (innerWidth < 769 && seconds > 56) {
       const rootFraming = smooth((seconds - 77) / 4);
       camera.fov = THREE.MathUtils.lerp(60, 78, rootFraming);
       camera.setViewOffset(width, height, 0, height * THREE.MathUtils.lerp(.085, .25, rootFraming), width, height);
@@ -167,6 +174,7 @@ export async function createJourney(canvas, onChange, { onUnavailable = () => {}
   function getState() {
     return { ready: !graphicsLost && !disposed, duration, seconds, progress: seconds / duration, playing, visible, phase, landmark,
       compact, graphicsLost, disposed, scenery: { landscape: Boolean(landscape), farms: Boolean(farms) },
+      brandGalaxy: { ...cosmos.group.userData.brandGalaxy },
       pixelRatio: renderer.getPixelRatio(), drawingBuffer: [canvas.width, canvas.height],
       travelling: Boolean(travel), exploring, discovery,
       camera: camera.position.toArray(), triangles: renderer.info.render.triangles,
