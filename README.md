@@ -2,9 +2,10 @@
 
 An English ingredient website with **Your Korean Odyssey**, a visitor-led
 3D journey. The single apostrophe between KO and S in the opening wordmark
-expands from its exact on-screen position. Its solid SVG silhouette turns into
-stars inside the same outline, then opens into the spiral galaxy. Copies and
-scattered apostrophe fragments are not used. The globe's oceans stay blue.
+expands from its exact on-screen position in a centred wordmark. Its curve
+gently turns, becomes starlight, and unfurls along ordered paths into the spiral
+galaxy. A soft luminous core and spiral dust form with it. The whole galaxy
+fits within the screen before the camera flies inward. The globe's oceans stay blue.
 The automatically playing galaxy → orbiting Earth → Korea zoom
 pauses on arrival and invites the visitor to begin. The camera follows Jeju,
 the south coast, Maisan and Buseoksa before entering tea, yuzu and ginseng
@@ -13,7 +14,7 @@ farms. Visitors choose growing regions on an illustrated atlas, fly there in
 reveal KO'S ingredient philosophy and buyer links. Burgundy, gold yellow
 and olive green connect the voyage to the brand, with blue oceans and olive
 continents on Earth. The opening reuses the existing star buffer and one small SVG overlay; it
-adds no textures or repeated symbol meshes.
+adds a two-triangle procedural glow, with no textures or repeated symbol meshes.
 
 The underlying camera route spans 83 seconds; visitor decisions pause the
 route at Korea (24s), tea (63.4s), yuzu (72.2s) and ginseng (82.4s).

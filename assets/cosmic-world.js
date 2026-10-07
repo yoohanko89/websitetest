@@ -45,11 +45,20 @@ function makeStarMaterial(size, opacity = 1, assembling = false) {
       void main() {
         vColor = color;
         ${assembling ? `
-          // One brand apostrophe opens into a galaxy on the GPU. The initial
-          // stars all lie inside the shared logo path; no scattered fragments.
-          float assembled = smoothstep(min(starSize * 0.025, 0.12), 1.0, formation);
-          vec3 starPosition = mix(originPosition, position, assembled);
-          vColor = mix(vec3(0.775822, 0.564712, 0.104616), color, assembled);
+          // Adjacent curved bands in the one apostrophe become adjacent arms.
+          // Polar interpolation unfurls those bands instead of sending random
+          // particles across the centre along unrelated straight lines.
+          float assembled = formation;
+          float originAngle = atan(originPosition.y, originPosition.x);
+          if (originAngle < 0.0) originAngle += 6.28318530718;
+          float radius = mix(length(originPosition.xy), length(position.xy), assembled);
+          // originPosition.z stores the continuous final angle, not a depth.
+          float angle = mix(originAngle, originPosition.z, assembled);
+          angle += sin(assembled * 3.14159265359) * 0.18 * (1.0 - radius / 140.0);
+          vec3 starPosition = vec3(cos(angle) * radius, sin(angle) * radius,
+            position.z * smoothstep(0.2, 1.0, assembled));
+          vColor = mix(vec3(0.775822, 0.564712, 0.104616), color,
+            smoothstep(0.22, 0.9, assembled));
         ` : 'vec3 starPosition = position;'}
         vec4 eye = modelViewMatrix * vec4(starPosition, 1.0);
         gl_Position = projectionMatrix * eye;
@@ -129,26 +138,56 @@ function makeGalaxy(count) {
   const outerColor = new THREE.Color('#a35262');
   const olive = new THREE.Color('#8f9d69');
   const color = new THREE.Color();
+  const finalBands = Array.from({ length: 5 }, () => []);
+  let maxFinalRadius = 0;
   for (let index = 0; index < count; index += 1) {
     const radius = Math.pow(random(), 0.72) * 115;
     const branch = index % 5;
     const twist = radius * 0.052 + (branch / 5) * Math.PI * 2;
-    const scatter = Math.pow(random(), 3) * (8 + radius * 0.11);
-    const angle = twist + (random() - 0.5) * 0.32;
+    // Fine dust stays close to five clear ribbons rather than a loose cloud.
+    const scatter = Math.pow(random(), 3) * (3.4 + radius * 0.052);
+    const angle = twist + (random() - 0.5) * 0.20;
     const gaussian = (random() + random() + random() - 1.5);
-    positions[index * 3] = Math.cos(angle) * radius + gaussian * scatter;
-    positions[index * 3 + 1] = Math.sin(angle) * radius + (random() - 0.5) * scatter;
-    positions[index * 3 + 2] = gaussian * (1.2 + radius * 0.042);
+    const px = Math.cos(angle) * radius + gaussian * scatter;
+    const py = Math.sin(angle) * radius + (random() - 0.5) * scatter;
+    positions[index * 3] = px;
+    positions[index * 3 + 1] = py;
+    positions[index * 3 + 2] = gaussian * (1.1 + radius * 0.035);
+    let finalAngle = Math.atan2(py, px);
+    // Preserve the branch's actual winding, including complete turns.
+    finalAngle += Math.round((angle - finalAngle) / (Math.PI * 2)) * Math.PI * 2;
+    const finalRadius = Math.hypot(px, py);
+    maxFinalRadius = Math.max(maxFinalRadius, finalRadius);
+    finalBands[branch].push({ index, radius: finalRadius, angle: finalAngle });
     color.copy(innerColor).lerp(middleColor, clamp(radius / 36, 0, 1));
     color.lerp(outerColor, clamp((radius - 32) / 83, 0, 0.8));
-    if (random() > 0.88) color.lerp(olive, 0.62);
-    color.multiplyScalar(0.6 + random() * 0.65);
+    if (random() > 0.95) color.lerp(olive, 0.18);
+    const armEmphasis = branch === 0 || branch === 2 ? 1.14 : 0.84;
+    const radialLight = 0.86 + 0.14 * Math.sin(radius * 0.10 + branch * 0.8);
+    color.multiplyScalar((0.65 + random() * 0.55) * armEmphasis * radialLight);
     color.toArray(colors, index * 3);
     sizes[index] = 0.26 + random() * 0.86 + (random() > 0.995 ? 2.3 : 0);
   }
   const originPoint = apostropheOriginSampler(seededRandom(43607));
+  const origins = [];
   for (let index = 0; index < count; index += 1) {
-    originPositions.set(originPoint(), index * 3);
+    const [x, y] = originPoint();
+    let angle = Math.atan2(y, x);
+    if (angle < 0) angle += Math.PI * 2;
+    origins.push({ x, y, angle, radius: Math.hypot(x, y) });
+  }
+  // Partition one continuous silhouette into ordered curved bands. Sorting
+  // radially within each band preserves the neighbourhood as it opens out.
+  origins.sort((a, b) => a.angle - b.angle);
+  let offset = 0;
+  for (const band of finalBands) {
+    band.sort((a, b) => a.radius - b.radius);
+    const sourceBand = origins.slice(offset, offset + band.length).sort((a, b) => a.radius - b.radius);
+    band.forEach((target, index) => {
+      const source = sourceBand[index];
+      originPositions.set([source.x, source.y, target.angle], target.index * 3);
+    });
+    offset += band.length;
   }
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
@@ -156,12 +195,55 @@ function makeGalaxy(count) {
   geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
   geometry.setAttribute('starSize', new THREE.BufferAttribute(sizes, 1));
   const galaxy = new THREE.Points(geometry, makeStarMaterial(3.8, 0, true));
-  galaxy.name = "KO'S single apostrophe opening into the Milky Way";
+  galaxy.name = "KO'S single apostrophe unfurling into the Milky Way";
   galaxy.position.set(0, 0, -240);
   galaxy.rotation.x = 0.16;
   // One immutable bound covers both the brand silhouette and the final arms.
   galaxy.geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 140);
+  galaxy.userData.finalDiameter = maxFinalRadius * 2;
   return galaxy;
+}
+
+function makeGalaxyGlow() {
+  // Two triangles and an analytic shader provide a soft luminous heart and
+  // spiral dust. There is no image, canvas, or texture allocation to retain.
+  const glow = new THREE.Mesh(new THREE.PlaneGeometry(270, 270), new THREE.ShaderMaterial({
+    uniforms: { opacity: { value: 0 } },
+    transparent: true, depthWrite: false, blending: THREE.AdditiveBlending,
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
+    fragmentShader: `
+      varying vec2 vUv;
+      uniform float opacity;
+      void main() {
+        vec2 p = (vUv - 0.5) * 2.0;
+        float r = length(p);
+        float edge = 1.0 - smoothstep(0.87, 1.0, r);
+        float angle = atan(p.y, p.x);
+        float phase = angle * 5.0 - r * 35.1;
+        float arms = pow(max(0.0, cos(phase + sin(r * 21.0 + angle * 2.0) * 0.13)), 12.0);
+        // Uneven soft gas supports the stars without making a filled disc.
+        float clumps = 0.67 + 0.20 * sin(r * 45.0 + sin(angle * 3.0) * 2.0)
+          + 0.13 * sin(r * 91.0 - angle * 7.0);
+        float core = exp(-r * r * 65.0);
+        float dust = arms * clumps * exp(-r * r * 3.4) * smoothstep(0.06, 0.24, r);
+        float halo = exp(-r * r * 7.0);
+        float nucleus = pow(core, 3.0);
+        vec3 gold = mix(vec3(0.78, 0.51, 0.15), vec3(0.34, 0.10, 0.14), r);
+        gold = mix(gold, vec3(1.0, 0.95, 0.80), smoothstep(0.1, 0.85, core));
+        gl_FragColor = vec4(gold,
+          (core * 0.28 + nucleus * 0.42 + dust * 0.125 + halo * 0.024) * edge * opacity);
+      }
+    `,
+  }));
+  glow.name = 'Subtle luminous spiral dust';
+  glow.position.z = -3;
+  return glow;
 }
 
 function makeDistantStars(count) {
@@ -348,12 +430,14 @@ export function createCosmicWorld(options = {}) {
   galaxySystem.rotation.copy(galaxy.rotation);
   galaxy.position.set(0, 0, 0);
   galaxy.rotation.set(0, 0, 0);
-  galaxySystem.add(galaxy);
+  const galaxyGlow = makeGalaxyGlow();
+  galaxySystem.add(galaxyGlow, galaxy);
   const distantStars = makeDistantStars(compact ? 600 : 1000);
   group.add(galaxySystem, distantStars);
   group.userData.brandGalaxy = {
     mode: 'single-apostrophe', apostropheCount: 1,
-    formationSeconds: 6.6, formation: 0, oceanColor: '#176b96',
+    formationSeconds: 5.8, formation: 0, oceanColor: '#176b96',
+    motion: 'ordered-polar-unfurl', finalDiameter: galaxy.userData.finalDiameter,
     originViewBoxWidth: BRAND_ORIGIN_HEIGHT * 24 / 36,
     originViewBoxHeight: BRAND_ORIGIN_HEIGHT,
   };
@@ -449,13 +533,18 @@ export function createCosmicWorld(options = {}) {
     lastTime = Number.isFinite(time) ? time : 0;
     lastProgress = clamp(progress, 0, 1);
     galaxySystem.rotation.z = lastTime * 0.0024;
-    const formation = smooth((lastTime - 4.2) / 2.4);
-    const starOpacity = smooth((lastTime - 2.4) / 1.5);
+    const formation = smooth((lastTime - 2.2) / 3.6);
+    const emergence = smooth((lastTime - 1.5) / 1.1);
+    // Thousands of stars initially occupy a small logo silhouette. Keep that
+    // handoff delicate, then gain luminosity as the ribbons separate.
+    const starOpacity = emergence * THREE.MathUtils.lerp(0.10, 1.0, smooth((lastTime - 2.4) / 3.0));
     galaxy.material.uniforms.formation.value = formation;
     galaxy.material.uniforms.opacity.value = starOpacity;
     galaxy.visible = starOpacity > 0.001;
-    distantStars.material.uniforms.opacity.value = 0.7 * smooth((lastTime - 3.3) / 2);
-    distantStars.visible = lastTime > 3.3;
+    galaxyGlow.material.uniforms.opacity.value = smooth((lastTime - 3.0) / 2.8);
+    galaxyGlow.visible = lastTime > 3.0;
+    distantStars.material.uniforms.opacity.value = 0.7 * smooth((lastTime - 4.4) / 2);
+    distantStars.visible = lastTime > 4.4;
     group.userData.brandGalaxy.formation = formation;
     const lock = smooth((lastProgress - 0.54) / 0.2);
     rotatingEarth.rotation.y = THREE.MathUtils.lerp(-1.12 + lastTime * 0.045, -0.647, lock);

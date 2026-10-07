@@ -1,5 +1,5 @@
-import { createJourney } from './assets/journey-3d.js?v=20261007-single-origin';
-import { createOdyssey } from './assets/odyssey.js?v=20261007-single-origin';
+import { createJourney } from './assets/journey-3d.js?v=20261007-unfurl';
+import { createOdyssey } from './assets/odyssey.js?v=20261007-unfurl';
 const root = document.documentElement;
 root.classList.add('js');
 const journey = document.querySelector('#cosmic-journey');
@@ -58,7 +58,7 @@ function filmChanged(state) {
   document.querySelector('#film-landmark').textContent = state.landmark;
   const chapters = { galaxy: '01 / A MARK BECOMES A GALAXY', earth: '02 / OUR LIVING PLANET', korea: '03 / YOUR ODYSSEY BEGINS', landscape: '04 / FOLLOW THE KOREAN LANDSCAPE', farms: '05 / FIND THE ESSENTIAL' };
   document.querySelector('#film-chapter').textContent = chapters[state.phase];
-  const opacity = Math.max(0, Math.min(1, (2.8 - state.seconds) / 1.5));
+  const opacity = Math.max(0, Math.min(1, (2.2 - state.seconds) / 1.4));
   const intro = document.querySelector('.copy-galaxy');
   intro.style.opacity = String(opacity);
   intro.inert = opacity < .1;

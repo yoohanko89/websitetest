@@ -1,7 +1,7 @@
 import * as THREE from './vendor/three.module.js';
-import { createCosmicWorld } from './cosmic-world.js?v=20261007-single-origin';
-import { createKoreanLandscape, getKoreanLandscapeCamera } from './korean-landscapes.js?v=20261007-single-origin';
-import { createKoreanFarms } from './korean-farms.js?v=20261007-single-origin';
+import { createCosmicWorld } from './cosmic-world.js?v=20261007-unfurl';
+import { createKoreanLandscape, getKoreanLandscapeCamera } from './korean-landscapes.js?v=20261007-unfurl';
+import { createKoreanFarms } from './korean-farms.js?v=20261007-unfurl';
 
 // One perspective camera, one WebGL scene. A tangent coordinate frame places
 // the Korean terrain on the globe and keeps local farm details numerically small.
@@ -66,6 +66,7 @@ export async function createJourney(canvas, onChange, { onUnavailable = () => {}
   let graphicsLost = false;
   let observer;
   let brandOrigin;
+  let headerHeight = 82;
   const brandSource = document.querySelector('.hero-wordmark .brand-apostrophe');
   const brandOverlay = document.querySelector('#origin-mark');
   const brandGalaxy = cosmos.getBrandGalaxy();
@@ -78,9 +79,10 @@ export async function createJourney(canvas, onChange, { onUnavailable = () => {}
 
   function frameBrandOrigin() {
     if (!brandOrigin || !brandOverlay || !brandSource) return;
-    const growth = Math.pow(12, smooth((seconds - .7) / 3.1));
-    brandSource.style.visibility = seconds >= .7 ? 'hidden' : '';
-    brandOverlay.hidden = seconds < .7 || seconds >= 4.2;
+    const growth = Math.pow(4.2, smooth((seconds - .8) / 1.8));
+    const curl = -.314 * smooth((seconds - .8) / 1.8);
+    brandSource.style.visibility = seconds >= .8 ? 'hidden' : '';
+    brandOverlay.hidden = seconds < .8 || seconds >= 2.8;
     // Render the SVG at its enlarged size so the original mark stays crisp.
     const markWidth = brandOrigin.width * growth;
     const markHeight = brandOrigin.height * growth;
@@ -88,9 +90,10 @@ export async function createJourney(canvas, onChange, { onUnavailable = () => {}
     brandOverlay.style.top = `${brandOrigin.y - markHeight / 2}px`;
     brandOverlay.style.width = `${markWidth}px`;
     brandOverlay.style.height = `${markHeight}px`;
-    brandOverlay.style.opacity = String(1 - smooth((seconds - 3.6) / .6));
+    brandOverlay.style.transform = `rotate(${curl}rad)`;
+    brandOverlay.style.opacity = String(1 - smooth((seconds - 1.8)));
     const { system, profile } = brandGalaxy;
-    profile.origin = { ...brandOrigin, growth };
+    profile.origin = { ...brandOrigin, growth, curl };
     const canonicalRotation = new THREE.Quaternion().setFromEuler(new THREE.Euler(.16, 0, seconds * .0024));
     if (seconds >= 10.5) {
       system.position.copy(canonicalGalaxy); system.scale.setScalar(1); system.quaternion.copy(canonicalRotation); return;
@@ -103,12 +106,20 @@ export async function createJourney(canvas, onChange, { onUnavailable = () => {}
       .unproject(camera).applyMatrix4(localToSpace);
     const pixelsPerWorldUnit = height * .5 * camera.projectionMatrix.elements[5] / depth;
     const initialScale = brandOrigin.height / (profile.originViewBoxHeight * 1000 * pixelsPerWorldUnit);
-    const opening = smooth((seconds - 4.2) / 2.4);
-    const leavingOrigin = smooth((seconds - 6.6) / 3.9);
+    const controlSpace = innerWidth < 769 ? 106 : 120;
+    const diameter = Math.min(width * .86, (height - headerHeight - controlSpace) * .68,
+      2 * (width - brandOrigin.x - 24), 2 * (brandOrigin.x - 24),
+      2 * (brandOrigin.y - headerHeight - 24), 2 * (height - controlSpace - brandOrigin.y - 24));
+    const fittedScale = Math.max(1, diameter) / (profile.finalDiameter * 1000 * pixelsPerWorldUnit);
+    const opening = smooth((seconds - 2.2) / 3.6);
+    const leavingOrigin = smooth((seconds - 7) / 3.5);
     system.position.copy(anchor).lerp(canonicalGalaxy, leavingOrigin);
-    system.scale.setScalar(THREE.MathUtils.lerp(initialScale * growth, 1, opening));
-    const facingViewer = rotation.clone().multiply(camera.quaternion);
-    system.quaternion.copy(facingViewer).slerp(canonicalRotation, opening);
+    const growingScale = THREE.MathUtils.lerp(initialScale * growth, fittedScale, opening);
+    system.scale.setScalar(THREE.MathUtils.lerp(growingScale, 1, leavingOrigin));
+    const facingViewer = rotation.clone().multiply(camera.quaternion)
+      .multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), -curl));
+    system.quaternion.copy(facingViewer).slerp(canonicalRotation, smooth((seconds - 5.8) / 1.6));
+    profile.fittedDiameter = diameter;
     const projected = system.position.clone().applyMatrix4(spaceToLocal).project(camera);
     profile.projectedOrigin = { x: (projected.x + 1) * width / 2, y: (1 - projected.y) * height / 2 };
   }
@@ -140,6 +151,7 @@ export async function createJourney(canvas, onChange, { onUnavailable = () => {}
       const glyph = brandSource.getBoundingClientRect();
       brandOrigin = { x: glyph.left + glyph.width / 2 - box.left, y: glyph.top + glyph.height / 2 - box.top, width: glyph.width, height: glyph.height };
     }
+    headerHeight = document.querySelector('#site-header')?.offsetHeight || 82;
     const ratio = Math.min(devicePixelRatio || 1, compact ? 1 : 1.25, Math.sqrt((compact ? 650000 : 1600000) / (width * height)), renderer.capabilities.maxTextureSize / Math.max(width, height));
     renderer.setPixelRatio(ratio);
     renderer.setSize(width, height, false);
